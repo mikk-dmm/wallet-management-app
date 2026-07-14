@@ -11,7 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.UniqueConstraint;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
+import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +39,9 @@ public class MonthlyBudget extends BaseEntity {
     private User user;
 
     @Column(name = "target_month", nullable = false)
-    private LocalDate targetMonth;
+    private YearMonth targetMonth;
 
     @Column(name = "budget_amount",nullable = false)
-    private Long budgetAmount;
+    private BigDecimal budgetAmount;
 
 }
