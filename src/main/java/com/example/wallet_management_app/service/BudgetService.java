@@ -10,7 +10,8 @@ import com.example.wallet_management_app.repository.CategoryBudgetRepository;
 import com.example.wallet_management_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+import java.time.YearMonth;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class BudgetService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
-    public void saveMonthlyBudget(Long userId, LocalDate targetMonth, Long budgetAmount) {
+    public void saveMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         MonthlyBudget monthlyBudget = monthlyBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth)
@@ -34,7 +35,7 @@ public class BudgetService {
         monthlyBudgetRepository.save(monthlyBudget);
     }
 
-    public void saveCategoryBudget(Long userId, Long categoryId, LocalDate targetMonth, Long budgetAmount) {
+    public void saveCategoryBudget(Long userId, Long categoryId, YearMonth targetMonth, BigDecimal budgetAmount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 

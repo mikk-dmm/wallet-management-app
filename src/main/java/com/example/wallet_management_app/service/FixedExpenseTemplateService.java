@@ -11,6 +11,7 @@ import com.example.wallet_management_app.repository.PaymentMethodRepository;
 import com.example.wallet_management_app.repository.FixedExpenseTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +62,7 @@ public class FixedExpenseTemplateService {
         Long categoryId,
         Long paymentMethodId,
         String name,
-        Long amount,
+        BigDecimal amount,
         Integer scheduledDay,
         String memo
     ) {
@@ -89,7 +90,7 @@ public class FixedExpenseTemplateService {
             Long categoryId,
             Long paymentMethodId,
             String name,
-            Long amount,
+            BigDecimal amount,
             Integer scheduledDay,
             String memo
     ) {

@@ -5,6 +5,9 @@ import com.example.wallet_management_app.entity.User;
 import com.example.wallet_management_app.repository.AlertSettingRepository;
 import com.example.wallet_management_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +27,7 @@ public class AlertSettingService {
                     newSetting.setMonthlyBudgetAlertEnabled(false);
                     newSetting.setMonthlyBudgetAlertThreshold(0);
                     newSetting.setRemainingAmountAlertEnabled(false);
-                    newSetting.setRemainingAmountThreshold(0L);
+                    newSetting.setRemainingAmountThreshold(BigDecimal.ZERO);
                     return alertSettingRepository.save(newSetting);
                 });
     }
@@ -34,7 +37,7 @@ public class AlertSettingService {
         Boolean monthlyBudgetAlertEnabled,
         Integer monthlyBudgetAlertThreshold,
         Boolean remainingAmountAlertEnabled,
-        Long remainingAmountThreshold) {
+        BigDecimal remainingAmountThreshold) {
         AlertSetting setting = findAlertSettingByUserId(userId);
 
         setting.setMonthlyBudgetAlertEnabled(monthlyBudgetAlertEnabled);
