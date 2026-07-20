@@ -3,11 +3,11 @@ services:
     image: mysql:8.4
     container_name: wallet-management-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: wallet_password
       MYSQL_DATABASE: wallet_management_app
       TZ: Asia/Tokyo
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
