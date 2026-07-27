@@ -17,6 +17,12 @@ public interface ExpenditureRepository extends JpaRepository<Expenditure, Long> 
         boolean existsByUserIdAndCategoryId(Long userId, Long categoryId);
         boolean existsByUserIdAndPaymentMethodId(Long userId, Long paymentMethodId);
 
+        List<Expenditure> findByUserIdAndExpenditureDateBetweenOrderByExpenditureDateDescIdDesc(
+                Long userId,
+                LocalDate periodStart,
+                LocalDate periodEnd
+        );
+
         @Query("""
                 SELECT SUM(e.amount)
                 FROM Expenditure e

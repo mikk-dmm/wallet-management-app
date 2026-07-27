@@ -28,5 +28,35 @@
             残額：
             <span th:text="${dashboard.remainingAmount}"></span>
         </p>
+
+
+        <h2>カテゴリ別進捗</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>カテゴリ</th>
+                    <th>予算</th>
+                    <th>支出</th>
+                    <th>残額</th>
+                    <th>進捗率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="progress : ${dashboard.categoryProgressList}">
+                    <td th:text="${progress.categoryName}"></td>
+                    <td th:text="${progress.budgetAmount}"></td>
+                    <td th:text="${progress.expenseAmount}"></td>
+                    <td th:text="${progress.remainingAmount}"></td>
+                    <td>
+                        <span th:text="${progress.progressRate}"></span>%
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            カテゴリ進捗件数：
+            <span th:text="${#lists.size(dashboard.categoryProgressList)}"></span>
+        </p>
     </body>
 </html>

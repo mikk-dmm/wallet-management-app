@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.FetchType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Expenditure extends BaseEntity {
 
 
     @Column(nullable = false)
-    private Long amount;
+    private BigDecimal amount;
 
     @Column(name = "expenditure_date", nullable = false)
     private LocalDate expenditureDate;

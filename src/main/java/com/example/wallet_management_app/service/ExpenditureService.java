@@ -2,6 +2,8 @@ package com.example.wallet_management_app.service;
 
 import java.util.List;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.math.BigDecimal;
 
 import com.example.wallet_management_app.entity.Expenditure;
 import com.example.wallet_management_app.entity.User;
@@ -11,6 +13,7 @@ import com.example.wallet_management_app.repository.ExpenditureRepository;
 import com.example.wallet_management_app.repository.UserRepository;
 import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.PaymentMethodRepository;
+import com.example.wallet_management_app.dto.ExpenditureDisplayDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,11 +64,32 @@ public class ExpenditureService {
         return paymentMethod;
     }
 
+    public List<ExpenditureDisplayDto> findExpenditures(Long userId, YearMonth targetMonth) {
+        LocalDate periodStart = targetMonth.atDay(1);
+        LocalDate periodEnd = targetMonth.atEndOfMonth();
+
+        List<Expenditure> expenditures =
+                expenditureRepository
+                    .findByUserIdAndExpenditureDateBetweenOrderByExpenditureDateDescIdDesc(
+                        userId,
+                        periodStart,
+                        periodEnd
+                    );
+        return expenditures.stream()
+                    .map(expenditure -> new ExpenditureDisplayDto(
+                            expenditure.getId(),
+                            expenditure.getExpenditureDate(),
+                            expenditure.getAmount(),
+                            expenditure.getCategory().getName(),
+                            expenditure.getPaymentMethod().getName()
+                    )).toList();
+    }
+
     public void createExpenditure(
         Long userId,
         Long categoryId,
         Long paymentMethodId,
-        Long amount,
+        BigDecimal amount,
         LocalDate expenditureDate,
         String memo
     ) {
@@ -90,7 +114,7 @@ public class ExpenditureService {
         Long userId,
         Long categoryId,
         Long paymentMethodId,
-        Long amount,
+        BigDecimal amount,
         LocalDate expenditureDate,
         String memo,
         Long expenditureId
