@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ダッシュボード</title>
+    </head>
+    <body>
+        
+        <h1>ダッシュボード</h1>
+
+        <p>
+            <span th:text="${dashboard.targetMonth}"></span>
+            のダッシュボード
+        </p>
+
+        <p>
+            月予算：
+            <span th:text="${dashboard.monthlyBudget}"></span>
+        </p>
+
+        <p>
+            支出合計：
+            <span th:text="${dashboard.monthlyExpenseTotal}"></span>
+        </p>
+
+        <p>
+            残額：
+            <span th:text="${dashboard.remainingAmount}"></span>
+        </p>
+
+
+        <h2>カテゴリ別支払い状況</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>カテゴリ</th>
+                    <th>予算</th>
+                    <th>支出</th>
+                    <th>残額</th>
+                    <th>進捗率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="progress : ${dashboard.categoryProgressList}">
+                    <td th:text="${progress.categoryName}"></td>
+                    <td th:text="${progress.budgetAmount}"></td>
+                    <td th:text="${progress.expenseAmount}"></td>
+                    <td th:text="${progress.remainingAmount}"></td>
+                    <td>
+                        <span th:text="${progress.progressRate}"></span>%
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

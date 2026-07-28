@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>お支払い一覧</title>
+    </head>
+    <body>
+        <h1>お支払い一覧</h1>
+        <p th:text="${targetMonth}"></p>
+        <p>
+            支出合計：
+            <span th:text="${monthlyExpenseTotal}"></span>円
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>支払日</th>
+                    <th>金額</th>
+                    <th>カテゴリ</th>
+                    <th>支払い方法</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="expenditure : ${expenditures}">
+                    <td th:text="${expenditure.id}"></td>
+                    <td th:text="${expenditure.expenditureDate}"></td>
+                    <td>
+                        <span th:text="${expenditure.amount}"></span>円
+                    </td>
+                    <td th:text="${expenditure.categoryName}"></td>
+                    <td th:text="${expenditure.paymentMethodName}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
