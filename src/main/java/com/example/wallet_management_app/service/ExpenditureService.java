@@ -85,6 +85,16 @@ public class ExpenditureService {
                     )).toList();
     }
 
+    public BigDecimal calculateMonthlyExpenseTotal(
+            Long userId,
+            YearMonth targetMonth
+    ) {
+        LocalDate periodStart = targetMonth.atDay(1);
+        LocalDate periodEnd = targetMonth.atEndOfMonth();
+
+        return expenditureRepository
+                    .sumAmountByUserIdAndDateBetween(userId, periodStart, periodEnd).orElse(BigDecimal.ZERO);
+    }
     public void createExpenditure(
         Long userId,
         Long categoryId,
