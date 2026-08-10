@@ -7,31 +7,48 @@
     </head>
     <body>
         <h1>お支払い一覧</h1>
+        <button onclick="location.href='/dashboard'">ダッシュボードに戻る</button>
         <p th:text="${targetMonth}"></p>
         <p>
             支出合計：
             <span th:text="${monthlyExpenseTotal}"></span>円
         </p>
+        <button onclick="location.href='expenditures/new'">新規支出登録</button>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>支出名</th>
                     <th>支払日</th>
                     <th>金額</th>
                     <th>カテゴリ</th>
                     <th>支払い方法</th>
+                    <th>操作</th>
                 </tr>
             </thead>
 
             <tbody>
                 <tr th:each="expenditure : ${expenditures}">
                     <td th:text="${expenditure.id}"></td>
+                    <td th:text="${expenditure.name}"></td>
                     <td th:text="${expenditure.expenditureDate}"></td>
                     <td>
                         <span th:text="${expenditure.amount}"></span>円
                     </td>
                     <td th:text="${expenditure.categoryName}"></td>
                     <td th:text="${expenditure.paymentMethodName}"></td>
+                    <td>
+                        <button type="button"
+                                th:onclick="|location.href='@{/expenditures/edit/{id}(id=${expenditure.id})}'|">
+                            編集
+                        </button>
+                        <form th:action="@{/expenditures/{id}/delete(id=${expenditure.id})}"
+                                method="post"
+                                style="display:inline"
+                                onsubmit="return confirm('この支出を削除しますか？');">
+                            <button type="submit">削除</button>
+                        </form>
+                    </td>
                 </tr>
             </tbody>
         </table>

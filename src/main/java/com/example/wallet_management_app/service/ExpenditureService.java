@@ -78,6 +78,7 @@ public class ExpenditureService {
         return expenditures.stream()
                     .map(expenditure -> new ExpenditureDisplayDto(
                             expenditure.getId(),
+                            expenditure.getName(),
                             expenditure.getExpenditureDate(),
                             expenditure.getAmount(),
                             expenditure.getCategory().getName(),
@@ -99,6 +100,7 @@ public class ExpenditureService {
         Long userId,
         Long categoryId,
         Long paymentMethodId,
+        String name,
         BigDecimal amount,
         LocalDate expenditureDate,
         String memo
@@ -113,6 +115,7 @@ public class ExpenditureService {
         expenditure.setUser(user);
         expenditure.setCategory(category);
         expenditure.setPaymentMethod(paymentMethod);
+        expenditure.setName(name);
         expenditure.setAmount(amount);
         expenditure.setExpenditureDate(expenditureDate);
         expenditure.setMemo(memo);
@@ -124,6 +127,7 @@ public class ExpenditureService {
         Long userId,
         Long categoryId,
         Long paymentMethodId,
+        String name,
         BigDecimal amount,
         LocalDate expenditureDate,
         String memo,
@@ -137,6 +141,7 @@ public class ExpenditureService {
 
         expenditure.setCategory(category);
         expenditure.setPaymentMethod(paymentMethod);
+        expenditure.setName(name);
         expenditure.setAmount(amount);
         expenditure.setExpenditureDate(expenditureDate);
         expenditure.setMemo(memo);

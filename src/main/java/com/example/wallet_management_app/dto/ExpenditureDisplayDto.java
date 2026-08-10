@@ -12,6 +12,8 @@ public class ExpenditureDisplayDto {
 
     private Long id;
 
+    private String name;
+
     private LocalDate expenditureDate;
 
     private BigDecimal amount;
