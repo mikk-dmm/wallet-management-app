@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>カテゴリ予算一覧</title>
+    </head>
+    <body>
+        <h1>カテゴリ予算一覧</h1>
+        <button onclick="location.href='/dashboard'">ダッシュボードに戻る</button>
+        <p th:text="${targetMonth}"></p>
+        <button onclick="location.href='/budgets/categoryBudget/new'">新規カテゴリ予算作成</button>
+        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>カテゴリ名</th>
+                    <th>予算額</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cateogryBudget : ${categoryBudgets}">
+                    <td th:text="${cateogryBudget.categoryName}"></td>
+                    <td>
+                        <span th:text="${cateogryBudget.budgetAmount}"></span>円
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

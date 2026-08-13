@@ -39,7 +39,7 @@ public class ExpenditureController {
         @RequestParam(required = false) YearMonth targetMonth,
         Model model
     ) {
-        System.out.println("targetMonth: " + targetMonth);
+
         Long userId = 1L;
 
         if (targetMonth == null) {

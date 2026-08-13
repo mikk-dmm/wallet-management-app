@@ -27,10 +27,28 @@ public class ExpenditureService {
     private final CategoryRepository categoryRepository;
     private final PaymentMethodRepository paymentMethodRepository;
 
-    public List<Expenditure> findExpenditures(Long userId) {
-        return expenditureRepository.findByUserId(userId);
-    }
+    public List<ExpenditureDisplayDto> findExpenditures(Long userId, YearMonth targetMonth) {
+        LocalDate periodStart = targetMonth.atDay(1);
+        LocalDate periodEnd = targetMonth.atEndOfMonth();
 
+        List<Expenditure> expenditures =
+                expenditureRepository
+                    .findByUserIdAndExpenditureDateBetweenOrderByExpenditureDateDescIdDesc(
+                        userId,
+                        periodStart,
+                        periodEnd
+                    );
+        return expenditures.stream()
+                    .map(expenditure -> new ExpenditureDisplayDto(
+                            expenditure.getId(),
+                            expenditure.getName(),
+                            expenditure.getExpenditureDate(),
+                            expenditure.getAmount(),
+                            expenditure.getCategory().getName(),
+                            expenditure.getPaymentMethod().getName()
+                    )).toList();
+    }
+    
     public Expenditure findExpenditure(Long userId, Long expenditureId) {
         Expenditure expenditure = expenditureRepository.findById(expenditureId)
                 .orElseThrow(() -> new IllegalArgumentException("Expenditure not found"));
@@ -62,28 +80,6 @@ public class ExpenditureService {
         }
 
         return paymentMethod;
-    }
-
-    public List<ExpenditureDisplayDto> findExpenditures(Long userId, YearMonth targetMonth) {
-        LocalDate periodStart = targetMonth.atDay(1);
-        LocalDate periodEnd = targetMonth.atEndOfMonth();
-
-        List<Expenditure> expenditures =
-                expenditureRepository
-                    .findByUserIdAndExpenditureDateBetweenOrderByExpenditureDateDescIdDesc(
-                        userId,
-                        periodStart,
-                        periodEnd
-                    );
-        return expenditures.stream()
-                    .map(expenditure -> new ExpenditureDisplayDto(
-                            expenditure.getId(),
-                            expenditure.getName(),
-                            expenditure.getExpenditureDate(),
-                            expenditure.getAmount(),
-                            expenditure.getCategory().getName(),
-                            expenditure.getPaymentMethod().getName()
-                    )).toList();
     }
 
     public BigDecimal calculateMonthlyExpenseTotal(
