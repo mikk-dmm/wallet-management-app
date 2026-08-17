@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.YearMonth;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +27,7 @@ public class BudgetService {
     private final CategoryRepository categoryRepository;
 
     // MonthlyBudget Methods
+    
     public void saveMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -43,6 +43,7 @@ public class BudgetService {
     }
 
     // CategoryBudget Methods
+
     public List<CategoryBudgetDisplayDto> findCategoryBudgets(Long userId, YearMonth targetMonth) {
 
         List<CategoryBudget> categoryBudgets =
@@ -50,7 +51,9 @@ public class BudgetService {
                 
         return categoryBudgets.stream()
                 .map(categoryBudget -> new CategoryBudgetDisplayDto(
+                        categoryBudget.getCategory().getId(),
                         categoryBudget.getCategory().getName(),
+                        categoryBudget.getTargetMonth(),
                         categoryBudget.getBudgetAmount()
                 ))
                 .toList();
@@ -68,7 +71,7 @@ public class BudgetService {
         return category;
     }
     
-    public Optional<CategoryBudget> findCategoryBudget(Long userId, Long categoryId, YearMonth targetMonth) {
+    public CategoryBudget findCategoryBudget(Long userId, Long categoryId, YearMonth targetMonth) {
 
         ownedCategoryCheck(userId, categoryId);
 
@@ -76,7 +79,7 @@ public class BudgetService {
                 categoryBudgetRepository.findByUserIdAndCategoryIdAndTargetMonth(userId, categoryId, targetMonth)
                         .orElseThrow(() -> new IllegalArgumentException("Category budget not found for the specified user, category, and month"));
 
-        return Optional.of(categoryBudget);
+        return categoryBudget;
     }
 
     public void createCategoryBudget(
@@ -98,7 +101,7 @@ public class BudgetService {
                     )) {
                 throw new IllegalArgumentException("this category budget is already exists");
             }
-            
+
             CategoryBudget categoryBudget = new CategoryBudget();
             categoryBudget.setUser(user);
             categoryBudget.setCategory(category);
@@ -114,19 +117,17 @@ public class BudgetService {
         YearMonth targetMonth,
         BigDecimal budgetAmount) {
 
-            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth)
-                    .orElseThrow(() -> new IllegalArgumentException("Category budget not found for the specified user, category, and month"));
+            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
 
             categoryBudget.setBudgetAmount(budgetAmount);
             categoryBudgetRepository.save(categoryBudget);
         }
 
-    public void deleteCategoryBudet(
+    public void deleteCategoryBudget(
         Long userId,
         Long categoryId,
         YearMonth targetMonth) {
-            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth)
-                    .orElseThrow(() -> new IllegalArgumentException("Category budget not found for the specified user, category, and month"));
+            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
 
             categoryBudgetRepository.delete(categoryBudget);
         }

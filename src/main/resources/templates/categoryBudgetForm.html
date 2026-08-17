@@ -7,7 +7,9 @@
     </head>
     <body>
         <h1>カテゴリ予算登録</h1>
-        <form th:action="@{/budgets/categoryBudget}"
+        <form th:action="${categoryId == null}
+                        ? @{/budgets/categoryBudget}
+                        : @{/budgets/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}(categoryId=${categoryId}, targetMonth=${targetMonth})}"
                     th:object="${categoryBudgetForm}"
                     method="post">
                 <label for="categoryName">カテゴリ名</label>
@@ -22,7 +24,7 @@
                 <input type="month" id="targetMonth" th:field="*{targetMonth}" required><br>
 
                 <button type="submit"
-                        th:text="${categoryId} == null ? '登録' : '更新'"></button>
+                        th:text="${categoryId == null} ? '登録' : '更新'"></button>
                 <button type="button" onclick="location.href='/budgets/categoryBudget'">キャンセル</button>
         </form>
 

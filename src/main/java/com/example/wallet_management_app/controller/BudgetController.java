@@ -1,6 +1,7 @@
 package com.example.wallet_management_app.controller;
 
 import com.example.wallet_management_app.entity.Category;
+import com.example.wallet_management_app.entity.CategoryBudget;
 import com.example.wallet_management_app.form.CategoryBudgetForm;
 import com.example.wallet_management_app.service.BudgetService;
 import com.example.wallet_management_app.service.CategoryService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
 
@@ -32,6 +34,7 @@ public class BudgetController {
     private final CategoryService categoryService;
 
     // CategoryBudget Methods
+
     @GetMapping("/categoryBudget")
     public String showCategoryBudgets(
         @RequestParam(required = false) YearMonth targetMonth,
@@ -90,7 +93,7 @@ public class BudgetController {
             form.getBudgetAmount()
         );} catch (IllegalArgumentException e) {
             List<Category> categories = categoryService.findCategories(userId);
-            
+
             model.addAttribute("categories", categories);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 
@@ -100,4 +103,69 @@ public class BudgetController {
         return "redirect:/budgets/categoryBudget?targetMonth=" + form.getTargetMonth();
     }
 
+    @GetMapping("/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}")
+    public String showEditCategoryBudgetForm(
+        @PathVariable("categoryId") Long categoryId,
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        Model model
+    ) {
+        Long userId = 1L;
+
+        CategoryBudget categoryBudget = budgetService.findCategoryBudget(userId, categoryId, targetMonth);
+        CategoryBudgetForm form = new CategoryBudgetForm();
+
+        form.setCategoryId(categoryBudget.getCategory().getId());
+        form.setTargetMonth(categoryBudget.getTargetMonth());
+        form.setBudgetAmount(categoryBudget.getBudgetAmount());
+        
+        List<Category> categories = categoryService.findCategories(userId);
+        model.addAttribute("categoryBudgetForm", form);
+        model.addAttribute("categories", categories);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("targetMonth", targetMonth);
+
+        return "categoryBudgetForm";
+    }
+
+    @PostMapping("/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}")
+    public String updateCategoryBudget(
+        @PathVariable("categoryId") Long categoryId,
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        @ModelAttribute("categoryBudgetForm") @Valid CategoryBudgetForm form,
+        BindingResult bindingresult,
+        Model model
+    ) {
+        Long userId = 1L;
+
+        if (bindingresult.hasErrors()) {
+            List<Category> categories = categoryService.findCategories(userId);
+
+            model.addAttribute("categoryId", categoryId);
+            model.addAttribute("targetMonth", targetMonth);
+            model.addAttribute("categories", categories);
+
+            return "categoryBudgetForm";
+        }
+
+        budgetService.updateCategoryBudget(
+            userId,
+            categoryId,
+            targetMonth,
+            form.getBudgetAmount()
+        );
+
+        return "redirect:/budgets/categoryBudget?targetMonth=" + form.getTargetMonth();
+    }
+
+    @PostMapping("/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete")
+    public String deleteCategoryBudget(
+        @PathVariable("categoryId") Long categoryId,
+        @PathVariable("targetMonth") YearMonth targetMonth
+    ) {
+        Long userId = 1L;
+
+        budgetService.deleteCategoryBudget(userId, categoryId, targetMonth);
+
+        return "redirect:/budgets/categoryBudget?targetMonth=" + targetMonth;
+    }
 }

@@ -16,13 +16,26 @@
                 <tr>
                     <th>カテゴリ名</th>
                     <th>予算額</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="cateogryBudget : ${categoryBudgets}">
-                    <td th:text="${cateogryBudget.categoryName}"></td>
+                <tr th:each="categoryBudget : ${categoryBudgets}">
+                    <td th:text="${categoryBudget.categoryName}"></td>
                     <td>
-                        <span th:text="${cateogryBudget.budgetAmount}"></span>円
+                        <span th:text="${categoryBudget.budgetAmount}"></span>円
+                    </td>
+                    <td>
+                        <button type="button"
+                                th:onclick="|location.href='@{/budgets/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}
+                                                                            (categoryId=${categoryBudget.categoryId}, targetMonth=${categoryBudget.targetMonth})}'|">
+                                編集
+                    </button>
+                        <form th:action="@{/budgets/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete(categoryId=${categoryBudget.categoryId}, targetMonth=${targetMonth})}"
+                                method="post"
+                                onsubmit="return confirm('予算設定を削除しますか？');">
+                            <button type="submit">削除</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
