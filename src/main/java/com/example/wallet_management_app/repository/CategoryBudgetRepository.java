@@ -10,6 +10,10 @@ public interface CategoryBudgetRepository extends JpaRepository<CategoryBudget, 
     Optional<CategoryBudget> findByUserIdAndCategoryIdAndTargetMonth(
         Long userId, Long categoryId, YearMonth targetMonth
     );
+    boolean existsByUserIdAndCategoryIdAndTargetMonth(
+        Long userId, Long categoryId, YearMonth targetMonth
+    );
+
     List<CategoryBudget> findByUserIdAndTargetMonth(
         Long userId, YearMonth targetMonth
     );

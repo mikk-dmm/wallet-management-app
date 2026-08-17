@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>カテゴリ予算一覧</title>
+    </head>
+    <body>
+        <h1>カテゴリ予算一覧</h1>
+        <button onclick="location.href='/dashboard'">ダッシュボードに戻る</button>
+        <p th:text="${targetMonth}"></p>
+        <button onclick="location.href='/budgets/categoryBudget/new'">新規カテゴリ予算作成</button>
+        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>カテゴリ名</th>
+                    <th>予算額</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="categoryBudget : ${categoryBudgets}">
+                    <td th:text="${categoryBudget.categoryName}"></td>
+                    <td>
+                        <span th:text="${categoryBudget.budgetAmount}"></span>円
+                    </td>
+                    <td>
+                        <button type="button"
+                                th:onclick="|location.href='@{/budgets/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}
+                                                                            (categoryId=${categoryBudget.categoryId}, targetMonth=${categoryBudget.targetMonth})}'|">
+                                編集
+                    </button>
+                        <form th:action="@{/budgets/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete(categoryId=${categoryBudget.categoryId}, targetMonth=${targetMonth})}"
+                                method="post"
+                                onsubmit="return confirm('予算設定を削除しますか？');">
+                            <button type="submit">削除</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

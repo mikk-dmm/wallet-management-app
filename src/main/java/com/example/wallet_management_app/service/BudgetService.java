@@ -8,10 +8,15 @@ import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.MonthlyBudgetRepository;
 import com.example.wallet_management_app.repository.CategoryBudgetRepository;
 import com.example.wallet_management_app.repository.UserRepository;
+import com.example.wallet_management_app.dto.CategoryBudgetDisplayDto;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
 import java.time.YearMonth;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,8 @@ public class BudgetService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
+    // MonthlyBudget Methods
+    
     public void saveMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -35,9 +42,24 @@ public class BudgetService {
         monthlyBudgetRepository.save(monthlyBudget);
     }
 
-    public void saveCategoryBudget(Long userId, Long categoryId, YearMonth targetMonth, BigDecimal budgetAmount) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    // CategoryBudget Methods
+
+    public List<CategoryBudgetDisplayDto> findCategoryBudgets(Long userId, YearMonth targetMonth) {
+
+        List<CategoryBudget> categoryBudgets =
+                categoryBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth);
+                
+        return categoryBudgets.stream()
+                .map(categoryBudget -> new CategoryBudgetDisplayDto(
+                        categoryBudget.getCategory().getId(),
+                        categoryBudget.getCategory().getName(),
+                        categoryBudget.getTargetMonth(),
+                        categoryBudget.getBudgetAmount()
+                ))
+                .toList();
+    }
+
+    public Category ownedCategoryCheck(Long userId, Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
@@ -45,15 +67,68 @@ public class BudgetService {
         if (!category.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("Category does not belong to the user");
         }
-        CategoryBudget categoryBudget = categoryBudgetRepository.findByUserIdAndCategoryIdAndTargetMonth(userId, categoryId, targetMonth)
-                .orElseGet(() -> {
-                    CategoryBudget newCategoryBudget = new CategoryBudget();
-                    newCategoryBudget.setUser(user);
-                    newCategoryBudget.setCategory(category);
-                    newCategoryBudget.setTargetMonth(targetMonth);
-                    return newCategoryBudget;
-                });
-        categoryBudget.setBudgetAmount(budgetAmount);
-        categoryBudgetRepository.save(categoryBudget);
+
+        return category;
     }
+    
+    public CategoryBudget findCategoryBudget(Long userId, Long categoryId, YearMonth targetMonth) {
+
+        ownedCategoryCheck(userId, categoryId);
+
+        CategoryBudget categoryBudget =
+                categoryBudgetRepository.findByUserIdAndCategoryIdAndTargetMonth(userId, categoryId, targetMonth)
+                        .orElseThrow(() -> new IllegalArgumentException("Category budget not found for the specified user, category, and month"));
+
+        return categoryBudget;
+    }
+
+    public void createCategoryBudget(
+        Long userId,
+        Long categoryId,
+        YearMonth targetMonth,
+        BigDecimal budgetAmount) {
+        
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            Category category = ownedCategoryCheck(userId, categoryId);
+
+            if (categoryBudgetRepository
+                    .existsByUserIdAndCategoryIdAndTargetMonth(
+                        userId,
+                        categoryId,
+                        targetMonth
+                    )) {
+                throw new IllegalArgumentException("this category budget is already exists");
+            }
+
+            CategoryBudget categoryBudget = new CategoryBudget();
+            categoryBudget.setUser(user);
+            categoryBudget.setCategory(category);
+            categoryBudget.setTargetMonth(targetMonth);
+            categoryBudget.setBudgetAmount(budgetAmount);
+
+            categoryBudgetRepository.save(categoryBudget);
+        }
+
+    public void updateCategoryBudget(
+        Long userId,
+        Long categoryId,
+        YearMonth targetMonth,
+        BigDecimal budgetAmount) {
+
+            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
+
+            categoryBudget.setBudgetAmount(budgetAmount);
+            categoryBudgetRepository.save(categoryBudget);
+        }
+
+    public void deleteCategoryBudget(
+        Long userId,
+        Long categoryId,
+        YearMonth targetMonth) {
+            CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
+
+            categoryBudgetRepository.delete(categoryBudget);
+        }
 }
