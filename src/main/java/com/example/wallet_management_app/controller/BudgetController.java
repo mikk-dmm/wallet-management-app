@@ -2,10 +2,13 @@ package com.example.wallet_management_app.controller;
 
 import com.example.wallet_management_app.entity.Category;
 import com.example.wallet_management_app.entity.CategoryBudget;
+import com.example.wallet_management_app.entity.MonthlyBudget;
 import com.example.wallet_management_app.form.CategoryBudgetForm;
+import com.example.wallet_management_app.form.MonthlyBudgetForm;
 import com.example.wallet_management_app.service.BudgetService;
 import com.example.wallet_management_app.service.CategoryService;
 import com.example.wallet_management_app.dto.CategoryBudgetDisplayDto;
+import com.example.wallet_management_app.dto.MonthlyBudgetDisplayDto;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,111 @@ public class BudgetController {
 
     private final BudgetService budgetService;
     private final CategoryService categoryService;
+
+    // MonthlyBudget Methods
+    @GetMapping("/monthlyBudget")
+    public String showMonthlyBudgets(Model model) {
+        Long userId = 1L;
+
+        List<MonthlyBudgetDisplayDto> monthlyBudgets =
+                budgetService.findMonthlyBudgets(userId);
+
+        model.addAttribute("monthlyBudgets", monthlyBudgets);
+
+        return "monthlyBudgetList";
+    }
+
+    @GetMapping("/monthlyBudget/new")
+    public String showMonthlyBudgetForm(Model model) {
+
+        MonthlyBudgetForm form = new MonthlyBudgetForm();
+
+        model.addAttribute("monthlyBudgetForm", form);
+
+        return "monthlyBudgetForm";
+    }
+
+    @PostMapping("/monthlyBudget")
+    public String createMonthlyBudget(
+        @ModelAttribute("monthlyBudgetForm") @Valid MonthlyBudgetForm form,
+        BindingResult result,
+        Model model,
+        RedirectAttributes redirectAttributes
+    ) {
+        
+        Long userId = 1L;
+
+        if (result.hasErrors()) {
+            model.addAttribute("monthlyBudgetForm", form);
+            return "monthlyBudgetForm";
+        }
+
+        try {
+            budgetService.createMonthlyBudget(userId,
+                form.getTargetMonth(),
+                form.getBudgetAmount()
+            );
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+            return "redirect:/budgets/monthlyBudget";
+        }
+
+        return "redirect:/budgets/monthlyBudget";
+    }
+
+    @GetMapping("/monthlyBudget/edit/{targetMonth}")
+    public String showEditMonthlyBudgetForm(
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        Model model
+    ) {
+
+        Long userId = 1L;
+        MonthlyBudget monthlyBudget = budgetService.findMonthlyBudget(userId, targetMonth);
+        MonthlyBudgetForm form = new MonthlyBudgetForm();
+
+        form.setTargetMonth(monthlyBudget.getTargetMonth());
+        form.setBudgetAmount(monthlyBudget.getBudgetAmount());
+
+        model.addAttribute("monthlyBudgetForm", form);
+
+        return "monthlyBudgetForm";
+    }
+
+    @PostMapping("/monthlyBudget/edit/{targetMonth}")
+    public String updateMonthlyBudget(
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        @ModelAttribute("monthlyBudgetForm") @Valid MonthlyBudgetForm form,
+        BindingResult result,
+        Model model
+    ) {
+        Long userId = 1L;
+
+        if (result.hasErrors()) {
+            model.addAttribute("monthlyBudgetForm", form);
+
+            return "monthlyBudgetForm";
+        }
+
+        budgetService.updateMonthlyBudget(
+            userId,
+            targetMonth,
+            form.getBudgetAmount()
+        );
+        
+        return "redirect:/budgets/monthlyBudget";
+    }
+
+    @PostMapping("/monthlyBudget/{targetMonth}/delete")
+    public String deleteMonthlyBudget(
+        @PathVariable("targetMonth") YearMonth targetMonth
+    ) {
+        Long userId = 1L;
+
+        budgetService.deleteMonthlyBudget(userId, targetMonth);
+
+        return "redirect:/budgets/monthlyBudget";
+    }
 
     // CategoryBudget Methods
 

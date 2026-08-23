@@ -9,6 +9,7 @@ import com.example.wallet_management_app.repository.MonthlyBudgetRepository;
 import com.example.wallet_management_app.repository.CategoryBudgetRepository;
 import com.example.wallet_management_app.repository.UserRepository;
 import com.example.wallet_management_app.dto.CategoryBudgetDisplayDto;
+import com.example.wallet_management_app.dto.MonthlyBudgetDisplayDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,18 +29,58 @@ public class BudgetService {
 
     // MonthlyBudget Methods
     
-    public void saveMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
+    public List<MonthlyBudgetDisplayDto> findMonthlyBudgets(Long userId) {
+
+        List<MonthlyBudget> monthlyBudgets =
+                monthlyBudgetRepository.findByUserIdOrderByTargetMonthDesc(userId);
+
+        return monthlyBudgets.stream()
+                .map(monthlyBudget ->  new MonthlyBudgetDisplayDto(
+                    monthlyBudget.getTargetMonth(),
+                    monthlyBudget.getBudgetAmount()
+                ))
+                .toList();
+    }
+
+    public MonthlyBudget findMonthlyBudget(Long userId, YearMonth targetMonth) {
+
+        MonthlyBudget monthlyBudget =
+                monthlyBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth)
+                .orElseThrow(() -> new IllegalArgumentException("monthlybudget not found for the specified user and month"));
+
+        return monthlyBudget;
+    }
+
+    public void createMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        MonthlyBudget monthlyBudget = monthlyBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth)
-                .orElseGet(() -> {
-                    MonthlyBudget newBudget = new MonthlyBudget();
-                    newBudget.setUser(user);
-                    newBudget.setTargetMonth(targetMonth);
-                    return newBudget;
-                });
+                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
+
+        if (monthlyBudgetRepository.existsByUserIdAndTargetMonth(userId, targetMonth)) {
+            throw new IllegalArgumentException("Monthly Budget already exists");
+        }
+
+        MonthlyBudget monthlyBudget = new MonthlyBudget();
+        monthlyBudget.setUser(user);
+        monthlyBudget.setTargetMonth(targetMonth);
+        monthlyBudget.setBudgetAmount(budgetAmount);
+
+        monthlyBudgetRepository.save(monthlyBudget);
+    }
+
+    public void updateMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
+
+        MonthlyBudget monthlyBudget = findMonthlyBudget(userId, targetMonth);
+
         monthlyBudget.setBudgetAmount(budgetAmount);
         monthlyBudgetRepository.save(monthlyBudget);
+    }
+
+    public void deleteMonthlyBudget(Long userId, YearMonth targetMonth) {
+
+        MonthlyBudget monthlyBudget = findMonthlyBudget(userId, targetMonth);
+
+        monthlyBudgetRepository.delete(monthlyBudget);
     }
 
     // CategoryBudget Methods
