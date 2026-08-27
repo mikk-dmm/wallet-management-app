@@ -168,7 +168,7 @@ public class BudgetController {
         
         Long userId = 1L;
 
-        List<Category> categories = categoryService.findCategories(userId);
+        List<Category> categories = categoryService.getCategories(userId);
 
         CategoryBudgetForm form = new CategoryBudgetForm();
 
@@ -188,7 +188,7 @@ public class BudgetController {
         Long userId = 1L;
 
         if (result.hasErrors()) {
-            List<Category> categories = categoryService.findCategories(userId);
+            List<Category> categories = categoryService.getCategories(userId);
             model.addAttribute("categories", categories);
             return "categoryBudgetForm";
         }
@@ -200,7 +200,7 @@ public class BudgetController {
             form.getTargetMonth(),
             form.getBudgetAmount()
         );} catch (IllegalArgumentException e) {
-            List<Category> categories = categoryService.findCategories(userId);
+            List<Category> categories = categoryService.getCategories(userId);
 
             model.addAttribute("categories", categories);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -226,7 +226,7 @@ public class BudgetController {
         form.setTargetMonth(categoryBudget.getTargetMonth());
         form.setBudgetAmount(categoryBudget.getBudgetAmount());
         
-        List<Category> categories = categoryService.findCategories(userId);
+        List<Category> categories = categoryService.getCategories(userId);
         model.addAttribute("categoryBudgetForm", form);
         model.addAttribute("categories", categories);
         model.addAttribute("categoryId", categoryId);
@@ -246,7 +246,7 @@ public class BudgetController {
         Long userId = 1L;
 
         if (bindingresult.hasErrors()) {
-            List<Category> categories = categoryService.findCategories(userId);
+            List<Category> categories = categoryService.getCategories(userId);
 
             model.addAttribute("categoryId", categoryId);
             model.addAttribute("targetMonth", targetMonth);

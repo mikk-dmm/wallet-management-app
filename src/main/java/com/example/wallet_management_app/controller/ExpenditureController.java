@@ -63,7 +63,7 @@ public class ExpenditureController {
     public String showExpenditureForm(Model model) {
         Long userId = 1L;
 
-        List<Category> categories = categoryService.findCategories(userId);
+        List<Category> categories = categoryService.getCategories(userId);
         List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
 
         ExpenditureForm form = new ExpenditureForm();
@@ -85,7 +85,7 @@ public class ExpenditureController {
         Long userId = 1L;
 
         if (bindingResult.hasErrors()) {
-            List<Category> categories = categoryService.findCategories(userId);
+            List<Category> categories = categoryService.getCategories(userId);
             List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
 
             model.addAttribute("categories", categories);
@@ -123,7 +123,7 @@ public class ExpenditureController {
         form.setPaymentMethodId(expenditure.getPaymentMethod().getId());
         form.setMemo(expenditure.getMemo());
 
-        List<Category> categories = categoryService.findCategories(userId);
+        List<Category> categories = categoryService.getCategories(userId);
         List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
         model.addAttribute("expenditureForm", form);
         model.addAttribute("categories", categories);
@@ -143,7 +143,7 @@ public class ExpenditureController {
         Long userId = 1L;
 
         if (bindingResult.hasErrors()) {
-            List<Category> categories = categoryService.findCategories(userId);
+            List<Category> categories = categoryService.getCategories(userId);
             List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
 
             model.addAttribute("categories", categories);
