@@ -6,6 +6,8 @@ import com.example.wallet_management_app.entity.User;
 import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.ExpenditureRepository;
 import com.example.wallet_management_app.repository.UserRepository;
+import com.example.wallet_management_app.repository.CategoryBudgetRepository;
+import com.example.wallet_management_app.dto.CategoryDisplayDto;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,8 +19,21 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final ExpenditureRepository expenditureRepository;
+    private final CategoryBudgetRepository categoryBudgetRepository;
 
-    public List<Category> findCategories(Long userId) {
+    // Displayed for CategoryList
+    public List<CategoryDisplayDto> findCategories(Long userId) {
+        List<Category> categories =
+                categoryRepository.findByUserId(userId);
+        return categories.stream()
+                .map(category -> new CategoryDisplayDto(
+                    category.getName()
+                ))
+                .toList();
+    }
+
+    // For get CategoryList
+    public List<Category> getCategories(Long userId) {
         return categoryRepository.findByUserId(userId);
     }
 
@@ -62,7 +77,9 @@ public class CategoryService {
     public void deleteCategory(Long userId, Long categoryId) {
         Category category = findCategory(userId, categoryId);
 
-        if (expenditureRepository.existsByUserIdAndCategoryId(userId, categoryId)) {
+        if (expenditureRepository.existsByUserIdAndCategoryId(userId, categoryId)
+                    && categoryBudgetRepository.existsByUserIdAndCategoryId(userId, categoryId)
+    ) {
             throw new IllegalArgumentException("Cannot delete category with associated expenditures");
         }
         categoryRepository.delete(category);
