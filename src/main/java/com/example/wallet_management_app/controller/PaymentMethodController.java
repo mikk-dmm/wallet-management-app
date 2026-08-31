@@ -143,7 +143,7 @@ public class PaymentMethodController {
                 paymentMethodId
             );
         } catch (IllegalArgumentException e) {
-            redirectAttribute.addFlashAttribute("errorMessgae", e.getMessage());
+            redirectAttribute.addFlashAttribute("errorMessage", e.getMessage());
         }
 
         return "redirect:/paymentMethods";
