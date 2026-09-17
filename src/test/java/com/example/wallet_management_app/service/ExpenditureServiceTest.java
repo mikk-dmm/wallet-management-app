@@ -20,6 +20,7 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ExpenditureServiceTest {
@@ -36,6 +37,7 @@ class ExpenditureServiceTest {
     @InjectMocks
     private ExpenditureService expenditureService;
 
+    // normal path testing the updateExpenditure method
     @Test
     void updateExpenditure_shouldUpdateExpenditureWhenValidDataInput() {
 
@@ -109,5 +111,141 @@ class ExpenditureServiceTest {
         assertEquals(updatedMemo, expenditure.getMemo());
         assertEquals(updatedCategoryName, expenditure.getCategory().getName());
         assertEquals(updatedPaymentMethodName, expenditure.getPaymentMethod().getName());
+    }
+
+    // abnormal path testing the updateExpenditure method
+    @Test
+    void updateExpenditure_shouldThrowException_whenCategoryBelongsToDifferentUser() {
+
+        // Arrange the initial data
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUsername");
+        user.setEmail("test@example.com");
+        user.setPassword("testPassword");
+
+        User otherUser = new User();
+        otherUser.setId(2L);
+        otherUser.setUsername("otherUsername");
+        otherUser.setEmail("otherUser@example.com");
+        otherUser.setPassword("otherUserPassword");
+
+        Category otherUserCategory = new Category();
+        otherUserCategory.setId(2L);
+        otherUserCategory.setUser(otherUser);
+        otherUserCategory.setName("Other User Category");
+
+        PaymentMethod paymentMethod = new PaymentMethod();
+        paymentMethod.setId(1L);
+        paymentMethod.setUser(user);
+        paymentMethod.setName("Test Payment Method");
+
+        Expenditure expenditure = new Expenditure();
+        expenditure.setUser(user);
+        expenditure.setCategory(otherUserCategory); // Set the category to belong to a different user
+        expenditure.setPaymentMethod(paymentMethod);
+        expenditure.setName("Test Expenditure");
+        expenditure.setAmount(new BigDecimal("100.00"));
+        expenditure.setExpenditureDate(LocalDate.of(2023, 1, 1));
+        expenditure.setMemo("Test Memo");
+        expenditure.setId(1L);
+
+        // Arrange the updated data
+        String updatedExpenditureName = "Updated Expenditure";
+        BigDecimal updatedAmount = new BigDecimal("150.00");
+        LocalDate updatedExpenditureDate = LocalDate.of(2023, 2, 1);
+        String updatedMemo = "Updated Memo";
+
+        Category updatedCategory = new Category();
+        updatedCategory.setId(2L);
+
+        PaymentMethod updatedPaymentMethod = new PaymentMethod();
+        updatedPaymentMethod.setId(2L);
+
+        // Arrange the mock behavior
+        when(expenditureRepository.findById(expenditure.getId())).thenReturn(Optional.of(expenditure));
+        when(categoryRepository.findById(otherUserCategory.getId())).thenReturn(Optional.of(otherUserCategory));
+
+        // Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            expenditureService.updateExpenditure(
+                user.getId(),
+                otherUserCategory.getId(),
+                updatedPaymentMethod.getId(),
+                updatedExpenditureName,
+                updatedAmount,
+                updatedExpenditureDate,
+                updatedMemo,
+                expenditure.getId()
+            );
+        });
+    }
+
+    @Test
+    void updateExpenditure_shouldExceptionThrow_whenExpenditureBelongsToDifferentUser() {
+
+        // Arrange the initial data
+
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUsername");
+        user.setEmail("test@example.com");
+        user.setPassword("testPassword");
+
+        User otherUser = new User();
+        otherUser.setId(2L);
+        otherUser.setUsername("otherUsername");
+        otherUser.setEmail("otherTestUser@exmaple.com");
+        otherUser.setPassword("otherTestUserPassword");
+
+        Category otherCategory = new Category();
+        otherCategory.setId(1L);
+        otherCategory.setUser(otherUser); // Set the category to belong to a different user
+        otherCategory.setName("Test Category");
+
+        PaymentMethod otherPaymentMethod = new PaymentMethod();
+        otherPaymentMethod.setId(1L);
+        otherPaymentMethod.setUser(otherUser);
+        otherPaymentMethod.setName("Other Payment Method");
+
+        Expenditure otherExpenditure = new Expenditure();
+        otherExpenditure.setUser(otherUser); // Set the expenditure to belong to a different user
+        otherExpenditure.setCategory(otherCategory);
+        otherExpenditure.setPaymentMethod(otherPaymentMethod);
+        otherExpenditure.setName("Test Expenditure");
+        otherExpenditure.setAmount(new BigDecimal("100.00"));
+        otherExpenditure.setExpenditureDate(LocalDate.of(2023, 1, 1));
+        otherExpenditure.setMemo("Test Memo");
+        otherExpenditure.setId(2L);
+
+        // Arrange the updated data
+        String updatedExpenditureName = "Updated Expenditure";
+        BigDecimal updatedAmount = new BigDecimal("150.00");
+        LocalDate updatedExpenditureDate = LocalDate.of(2023, 2, 1);
+        String updatedMemo = "Updated Memo";
+
+        Category updatedCategory = new Category();
+        updatedCategory.setId(1L);
+
+        PaymentMethod updatedPaymentMethod = new PaymentMethod();
+        updatedPaymentMethod.setId(1L);
+
+        // Arrange the mock behavior
+        when(expenditureRepository.findById(otherExpenditure.getId())).thenReturn(Optional.of(otherExpenditure));
+
+        // Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            expenditureService.updateExpenditure(
+                user.getId(),
+                updatedCategory.getId(),
+                updatedPaymentMethod.getId(),
+                updatedExpenditureName,
+                updatedAmount,
+                updatedExpenditureDate,
+                updatedMemo,
+                otherExpenditure.getId()
+            );
+        });
     }
 }
