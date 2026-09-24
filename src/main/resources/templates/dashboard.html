@@ -13,6 +13,9 @@
         <button onclick="location.href='/budgets/monthlyBudget'">月別予算一覧</button>
         <button onclick="location.href='/categories'">カテゴリ一覧</button>
         <button onclick="location.href='/paymentMethods'">支払い方法一覧</button>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">ログアウト</button>
+        </form>
 
         <p>
             <span th:text="${dashboard.targetMonth}"></span>

@@ -3,6 +3,7 @@ package com.example.wallet_management_app.controller;
 import com.example.wallet_management_app.entity.PaymentMethod;
 import com.example.wallet_management_app.service.PaymentMethodService;
 import com.example.wallet_management_app.form.PaymentMethodForm;
+import com.example.wallet_management_app.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 
 import jakarta.validation.Valid;
@@ -26,9 +28,12 @@ public class PaymentMethodController {
     private final PaymentMethodService paymentMethodService;
 
     @GetMapping("/paymentMethods")
-    public String showPaymetnMethods(Model model) {
+    public String showPaymetnMethods(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        Model model
+    ) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
 
@@ -53,11 +58,12 @@ public class PaymentMethodController {
     public String createPaymentMethod(
         @Valid @ModelAttribute("paymentMethodForm") PaymentMethodForm form,
         BindingResult result,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model,
         RedirectAttributes redirectAttribute
     ) {
 
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
         
         boolean editMode = false;
 
@@ -83,9 +89,10 @@ public class PaymentMethodController {
     @GetMapping("/paymentMethod/edit/{id}")
     public String showEditPaymentMethodForm(
         @PathVariable("id") Long paymentMethodId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         boolean editMode = true;
 
@@ -106,10 +113,11 @@ public class PaymentMethodController {
         BindingResult result,
         @PathVariable("id") Long paymentMethodId,
         Model model,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttribute
     ) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
         boolean editMode = true;
 
         if (result.hasErrors()) {
@@ -133,9 +141,10 @@ public class PaymentMethodController {
     @PostMapping("/paymentMethod/{id}/delete")
     public String deletePaymentMethod(
         @PathVariable("id") Long paymentMethodId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttribute
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         try {
             paymentMethodService.deletePaymentMethod(

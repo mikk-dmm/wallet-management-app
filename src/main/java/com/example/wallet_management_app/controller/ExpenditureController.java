@@ -8,6 +8,8 @@ import com.example.wallet_management_app.entity.Expenditure;
 import com.example.wallet_management_app.entity.Category;
 import com.example.wallet_management_app.entity.PaymentMethod;
 import com.example.wallet_management_app.form.ExpenditureForm;
+import com.example.wallet_management_app.security.CustomUserDetails;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 
 import java.time.YearMonth;
@@ -37,10 +40,11 @@ public class ExpenditureController {
     @GetMapping("/expenditures")
     public String showExpenditures(
         @RequestParam(required = false) YearMonth targetMonth,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
 
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (targetMonth == null) {
             targetMonth = YearMonth.now();
@@ -59,9 +63,12 @@ public class ExpenditureController {
         return "expenditureList";
     }
 
-    @GetMapping("expenditures/new")
-    public String showExpenditureForm(Model model) {
-        Long userId = 1L;
+    @GetMapping("/expenditures/new")
+    public String showExpenditureForm(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        Model model
+    ) {
+        Long userId = userDetails.getUserId();
 
         List<Category> categories = categoryService.getCategories(userId);
         List<PaymentMethod> paymentMethods = paymentMethodService.findPaymentMethods(userId);
@@ -80,9 +87,10 @@ public class ExpenditureController {
     public String createExpenditure(
         @ModelAttribute("expenditureForm") @Valid ExpenditureForm form,
         BindingResult bindingResult,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (bindingResult.hasErrors()) {
             List<Category> categories = categoryService.getCategories(userId);
@@ -109,9 +117,10 @@ public class ExpenditureController {
     @GetMapping("/expenditures/edit/{expenditureId}")
     public String showEditExpenditureForm(
         @PathVariable("expenditureId") Long expenditureId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         Expenditure expenditure = expenditureService.findExpenditure(userId, expenditureId);
         ExpenditureForm form = new ExpenditureForm();
@@ -138,9 +147,10 @@ public class ExpenditureController {
         @PathVariable("expenditureId") Long expenditureId,
         @ModelAttribute("expenditureForm") @Valid ExpenditureForm form,
         BindingResult bindingResult,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (bindingResult.hasErrors()) {
             List<Category> categories = categoryService.getCategories(userId);
@@ -169,9 +179,10 @@ public class ExpenditureController {
 
     @PostMapping("/expenditures/{expenditureId}/delete")
     public String deleteExpenditure(
-        @PathVariable("expenditureId") Long expenditureId
+        @PathVariable("expenditureId") Long expenditureId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         expenditureService.deleteExpenditure(userId, expenditureId);
 

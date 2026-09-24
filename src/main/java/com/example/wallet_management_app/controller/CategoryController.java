@@ -3,6 +3,7 @@ package com.example.wallet_management_app.controller;
 import com.example.wallet_management_app.entity.Category;
 import com.example.wallet_management_app.service.CategoryService;
 import com.example.wallet_management_app.form.CategoryForm;
+import com.example.wallet_management_app.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 
 import jakarta.validation.Valid;
@@ -26,9 +28,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
-    public String showCategories(Model model) {
+    public String showCategories(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        Model model
+    ) {
 
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         List<Category> categories = categoryService.getCategories(userId);
 
@@ -54,9 +59,10 @@ public class CategoryController {
         @Valid @ModelAttribute("categoryForm") CategoryForm form,
         BindingResult result,
         Model model,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttributes
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         boolean editMode = false;
 
@@ -101,10 +107,11 @@ public class CategoryController {
         BindingResult result,
         @PathVariable("categoryId") Long categoryId,
         Model model,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttributes
     ) {
 
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
         boolean editMode = true;
 
         if (result.hasErrors()) {
@@ -129,10 +136,11 @@ public class CategoryController {
     @PostMapping("category/{categoryId}/delete")
     public String deleteCategory(
         @PathVariable("categoryId") Long categoryId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttributes
     ) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         try {
             categoryService.deleteCategory(userId, categoryId);
