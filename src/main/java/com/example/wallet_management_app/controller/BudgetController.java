@@ -9,6 +9,7 @@ import com.example.wallet_management_app.service.BudgetService;
 import com.example.wallet_management_app.service.CategoryService;
 import com.example.wallet_management_app.dto.CategoryBudgetDisplayDto;
 import com.example.wallet_management_app.dto.MonthlyBudgetDisplayDto;
+import com.example.wallet_management_app.security.CustomUserDetails;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import jakarta.validation.Valid;
 
@@ -38,8 +40,11 @@ public class BudgetController {
 
     // MonthlyBudget Methods
     @GetMapping("/monthlyBudget")
-    public String showMonthlyBudgets(Model model) {
-        Long userId = 1L;
+    public String showMonthlyBudgets(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        Model model
+    ) {
+        Long userId = userDetails.getUserId();
 
         List<MonthlyBudgetDisplayDto> monthlyBudgets =
                 budgetService.findMonthlyBudgets(userId);
@@ -64,10 +69,11 @@ public class BudgetController {
         @ModelAttribute("monthlyBudgetForm") @Valid MonthlyBudgetForm form,
         BindingResult result,
         Model model,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttributes
     ) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (result.hasErrors()) {
             model.addAttribute("monthlyBudgetForm", form);
@@ -90,11 +96,12 @@ public class BudgetController {
 
     @GetMapping("/monthlyBudget/edit/{targetMonth}")
     public String showEditMonthlyBudgetForm(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable("targetMonth") YearMonth targetMonth,
         Model model
     ) {
 
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
         MonthlyBudget monthlyBudget = budgetService.findMonthlyBudget(userId, targetMonth);
         MonthlyBudgetForm form = new MonthlyBudgetForm();
 
@@ -111,9 +118,10 @@ public class BudgetController {
         @PathVariable("targetMonth") YearMonth targetMonth,
         @ModelAttribute("monthlyBudgetForm") @Valid MonthlyBudgetForm form,
         BindingResult result,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (result.hasErrors()) {
             model.addAttribute("monthlyBudgetForm", form);
@@ -132,9 +140,10 @@ public class BudgetController {
 
     @PostMapping("/monthlyBudget/{targetMonth}/delete")
     public String deleteMonthlyBudget(
-        @PathVariable("targetMonth") YearMonth targetMonth
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         budgetService.deleteMonthlyBudget(userId, targetMonth);
 
@@ -146,9 +155,10 @@ public class BudgetController {
     @GetMapping("/categoryBudget")
     public String showCategoryBudgets(
         @RequestParam(required = false) YearMonth targetMonth,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (targetMonth == null) {
             targetMonth = YearMonth.now();
@@ -164,9 +174,12 @@ public class BudgetController {
     }
 
     @GetMapping("/categoryBudget/new")
-    public String showCategoryBudgetForm(Model model) {
+    public String showCategoryBudgetForm(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        Model model
+    ) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         List<Category> categories = categoryService.getCategories(userId);
 
@@ -183,9 +196,10 @@ public class BudgetController {
         @ModelAttribute("categoryBudgetForm") @Valid CategoryBudgetForm form,
         BindingResult result,
         Model model,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         RedirectAttributes redirectAttributes) {
         
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (result.hasErrors()) {
             List<Category> categories = categoryService.getCategories(userId);
@@ -215,9 +229,10 @@ public class BudgetController {
     public String showEditCategoryBudgetForm(
         @PathVariable("categoryId") Long categoryId,
         @PathVariable("targetMonth") YearMonth targetMonth,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         CategoryBudget categoryBudget = budgetService.findCategoryBudget(userId, categoryId, targetMonth);
         CategoryBudgetForm form = new CategoryBudgetForm();
@@ -241,9 +256,10 @@ public class BudgetController {
         @PathVariable("targetMonth") YearMonth targetMonth,
         @ModelAttribute("categoryBudgetForm") @Valid CategoryBudgetForm form,
         BindingResult bindingresult,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         if (bindingresult.hasErrors()) {
             List<Category> categories = categoryService.getCategories(userId);
@@ -268,9 +284,10 @@ public class BudgetController {
     @PostMapping("/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete")
     public String deleteCategoryBudget(
         @PathVariable("categoryId") Long categoryId,
-        @PathVariable("targetMonth") YearMonth targetMonth
+        @PathVariable("targetMonth") YearMonth targetMonth,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long userId = 1L;
+        Long userId = userDetails.getUserId();
 
         budgetService.deleteCategoryBudget(userId, categoryId, targetMonth);
 
