@@ -119,21 +119,25 @@ public class BudgetController {
         @ModelAttribute("monthlyBudgetForm") @Valid MonthlyBudgetForm form,
         BindingResult result,
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        Model model
+        Model model,
+        RedirectAttributes redirectAttributes
     ) {
         Long userId = userDetails.getUserId();
 
         if (result.hasErrors()) {
             model.addAttribute("monthlyBudgetForm", form);
-
             return "monthlyBudgetForm";
         }
 
-        budgetService.updateMonthlyBudget(
+        try {budgetService.updateMonthlyBudget(
             userId,
             targetMonth,
             form.getBudgetAmount()
-        );
+        );} catch (IllegalArgumentException e) {
+            model.addAttribute("monthlyBudgetForm", form);
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            
+        }
         
         return "redirect:/budgets/monthlyBudget";
     }

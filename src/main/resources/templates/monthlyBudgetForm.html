@@ -7,6 +7,7 @@
     </head>
     <body>
         <h1>月別予算登録</h1>
+        <p th:if="${errorMessage}" th:text="${errorMessage}"></p>
         <form th:action="${monthlyBudgetForm.targetMonth == null}
                         ? @{/budgets/monthlyBudget}
                         : @{/budgets/monthlyBudget/edit/{targetMonth}(targetMonth=${monthlyBudgetForm.targetMonth})}"
