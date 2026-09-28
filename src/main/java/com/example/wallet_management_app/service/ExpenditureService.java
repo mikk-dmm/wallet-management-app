@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import com.example.wallet_management_app.entity.Expenditure;
 import com.example.wallet_management_app.entity.User;
+import com.example.wallet_management_app.exception.ExpenditureNotFoundException;
 import com.example.wallet_management_app.entity.Category;
 import com.example.wallet_management_app.entity.PaymentMethod;
 import com.example.wallet_management_app.repository.ExpenditureRepository;
@@ -52,10 +53,10 @@ public class ExpenditureService {
     
     public Expenditure findExpenditure(Long userId, Long expenditureId) {
         Expenditure expenditure = expenditureRepository.findById(expenditureId)
-                .orElseThrow(() -> new IllegalArgumentException("Expenditure not found"));
+                .orElseThrow(() -> new ExpenditureNotFoundException("Expenditure not found"));
 
         if (!expenditure.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Expenditure does not belong to the user");
+            throw new ExpenditureNotFoundException("Expenditure not found");
         }
 
         return expenditure;
@@ -149,23 +150,5 @@ public class ExpenditureService {
     public void deleteExpenditure(Long userId, Long expenditureId) {
         Expenditure expenditure = findExpenditure(userId, expenditureId);
         expenditureRepository.delete(expenditure);
-    }
-
-    @Transactional
-    public void transactionRollbackTest(Long categoryId, Long paymentMethodId) {
-
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
-
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found"));
-
-        category.setName("Transaction Test Category");
-        paymentMethod.setName("Transaction Test Payment Method");
-
-        categoryRepository.flush();
-        paymentMethodRepository.flush();
-
-        throw new RuntimeException("Intentional exception to test transaction rollback");
     }
 }
