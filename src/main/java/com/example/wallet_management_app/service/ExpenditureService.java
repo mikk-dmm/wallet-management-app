@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import com.example.wallet_management_app.entity.Expenditure;
 import com.example.wallet_management_app.entity.User;
 import com.example.wallet_management_app.exception.ExpenditureNotFoundException;
+import com.example.wallet_management_app.exception.CategoryNotFoundException;
+import com.example.wallet_management_app.exception.PaymentMethodNotFoundException;
 import com.example.wallet_management_app.entity.Category;
 import com.example.wallet_management_app.entity.PaymentMethod;
 import com.example.wallet_management_app.repository.ExpenditureRepository;
@@ -64,10 +66,10 @@ public class ExpenditureService {
 
     private Category findOwnedCategory(Long userId, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         if (!category.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Category does not belong to the user");
+            throw new CategoryNotFoundException("Category not found");
         }
 
         return category;
@@ -75,10 +77,10 @@ public class ExpenditureService {
 
     private PaymentMethod findOwnedPaymentMethod(Long userId, Long paymentMethodId) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found"));
+                .orElseThrow(() -> new PaymentMethodNotFoundException("Payment method not found"));
 
         if (!paymentMethod.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Payment method does not belong to the user");
+            throw new PaymentMethodNotFoundException("Payment method not found");
         }
 
         return paymentMethod;
@@ -94,6 +96,8 @@ public class ExpenditureService {
         return expenditureRepository
                     .sumAmountByUserIdAndDateBetween(userId, periodStart, periodEnd).orElse(BigDecimal.ZERO);
     }
+
+    @Transactional
     public void createExpenditure(
         Long userId,
         Long categoryId,
@@ -121,6 +125,7 @@ public class ExpenditureService {
         expenditureRepository.save(expenditure);
     }
 
+    @Transactional
     public void updateExpenditure(
         Long userId,
         Long categoryId,
@@ -147,6 +152,7 @@ public class ExpenditureService {
         expenditureRepository.save(expenditure);
     }
 
+    @Transactional
     public void deleteExpenditure(Long userId, Long expenditureId) {
         Expenditure expenditure = findExpenditure(userId, expenditureId);
         expenditureRepository.delete(expenditure);

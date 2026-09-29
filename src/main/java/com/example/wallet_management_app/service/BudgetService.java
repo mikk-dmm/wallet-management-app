@@ -8,8 +8,12 @@ import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.MonthlyBudgetRepository;
 import com.example.wallet_management_app.repository.CategoryBudgetRepository;
 import com.example.wallet_management_app.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.example.wallet_management_app.dto.CategoryBudgetDisplayDto;
 import com.example.wallet_management_app.dto.MonthlyBudgetDisplayDto;
+import com.example.wallet_management_app.exception.CategoryNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,11 +50,12 @@ public class BudgetService {
 
         MonthlyBudget monthlyBudget =
                 monthlyBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth)
-                .orElseThrow(() -> new IllegalArgumentException("monthlybudget not found for the specified user and month"));
+                .orElseThrow(() -> new IllegalArgumentException("monthly budget not found for the specified user and month"));
 
         return monthlyBudget;
     }
 
+    @Transactional
     public void createMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
 
         User user = userRepository.findById(userId)
@@ -68,6 +73,7 @@ public class BudgetService {
         monthlyBudgetRepository.save(monthlyBudget);
     }
 
+    @Transactional
     public void updateMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
 
         MonthlyBudget monthlyBudget = findMonthlyBudget(userId, targetMonth);
@@ -76,6 +82,7 @@ public class BudgetService {
         monthlyBudgetRepository.save(monthlyBudget);
     }
 
+    @Transactional
     public void deleteMonthlyBudget(Long userId, YearMonth targetMonth) {
 
         MonthlyBudget monthlyBudget = findMonthlyBudget(userId, targetMonth);
@@ -103,10 +110,10 @@ public class BudgetService {
     public Category ownedCategoryCheck(Long userId, Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         if (!category.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Category does not belong to the user");
+            throw new CategoryNotFoundException("Category not found");
         }
 
         return category;
@@ -123,12 +130,13 @@ public class BudgetService {
         return categoryBudget;
     }
 
+    @Transactional
     public void createCategoryBudget(
         Long userId,
         Long categoryId,
         YearMonth targetMonth,
-        BigDecimal budgetAmount) {
-        
+        BigDecimal budgetAmount
+    ) {
             User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -150,26 +158,30 @@ public class BudgetService {
             categoryBudget.setBudgetAmount(budgetAmount);
 
             categoryBudgetRepository.save(categoryBudget);
-        }
+    }
 
+    @Transactional
     public void updateCategoryBudget(
         Long userId,
         Long categoryId,
         YearMonth targetMonth,
-        BigDecimal budgetAmount) {
+        BigDecimal budgetAmount
+    ) {
 
             CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
 
             categoryBudget.setBudgetAmount(budgetAmount);
             categoryBudgetRepository.save(categoryBudget);
-        }
+    }
 
-    public void deleteCategoryBudget(
+    @Transactional
+    public void deleteCategoryBudget (
         Long userId,
         Long categoryId,
-        YearMonth targetMonth) {
+        YearMonth targetMonth
+    ) {
             CategoryBudget categoryBudget = findCategoryBudget(userId, categoryId, targetMonth);
 
             categoryBudgetRepository.delete(categoryBudget);
-        }
+    }
 }

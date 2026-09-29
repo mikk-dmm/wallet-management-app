@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,7 +18,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 public class ExpenditureForm {
 
-    @NotNull(message = "name is required")
+    @NotBlank(message = "name is required")
+    @Size(max = 30, message = "expenditure name must be at most 30 characters")
     private String name;
 
     @NotNull(message = "Category is required")
@@ -26,6 +29,7 @@ public class ExpenditureForm {
     private Long paymentMethodId;
 
     @NotNull(message = "Amount is required")
+    @Positive(message = "Amount must be grater than 0")
     private BigDecimal amount;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

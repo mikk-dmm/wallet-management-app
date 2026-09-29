@@ -6,7 +6,11 @@ import com.example.wallet_management_app.entity.User;
 import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.ExpenditureRepository;
 import com.example.wallet_management_app.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.example.wallet_management_app.repository.CategoryBudgetRepository;
+import com.example.wallet_management_app.exception.CategoryNotFoundException;
 import com.example.wallet_management_app.dto.CategoryDisplayDto;
 import org.springframework.stereotype.Service;
 
@@ -39,14 +43,16 @@ public class CategoryService {
 
     public Category findCategory(Long userId, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         if (!category.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Category does not belong to the user");
+            throw new CategoryNotFoundException("Category not found");
         }
 
         return category;
     }
+
+    @Transactional
     public void createCategory(Long userId, String name) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -62,6 +68,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    @Transactional
     public void updateCategory(Long userId, Long categoryId, String name) {
         Category category = findCategory(userId, categoryId);
 
@@ -74,11 +81,12 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    @Transactional
     public void deleteCategory(Long userId, Long categoryId) {
         Category category = findCategory(userId, categoryId);
 
         if (expenditureRepository.existsByUserIdAndCategoryId(userId, categoryId)
-                    && categoryBudgetRepository.existsByUserIdAndCategoryId(userId, categoryId)
+                    || categoryBudgetRepository.existsByUserIdAndCategoryId(userId, categoryId)
     ) {
             throw new IllegalArgumentException("Cannot delete category with associated expenditures");
         }

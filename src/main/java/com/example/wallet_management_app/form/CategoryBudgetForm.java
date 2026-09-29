@@ -1,6 +1,7 @@
 package com.example.wallet_management_app.form;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,5 +21,6 @@ public class CategoryBudgetForm {
     private YearMonth targetMonth;
 
     @NotNull(message = "Budget amount is required")
+    @Positive(message = "budget amount is must be grater than 0")
     private BigDecimal budgetAmount;
 }

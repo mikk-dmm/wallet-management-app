@@ -7,19 +7,24 @@
     </head>
     <body>
         <h1>お支払い登録</h1>
+        <p th:if="${errorMessage}" th:text="${errorMessage}"></p>
         <form th:action="${expenditureId} == null
                     ? @{/expenditures}
                     : @{/expenditures/edit/{id}(id=${expenditureId})}"
                     th:object="${expenditureForm}"
                     method="post">
             <label for="name">支出名:</label>
-            <input type="text" id="name" th:field="*{name}" required><br>
+            <input type="text" id="name" th:field="*{name}" required>
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p><br>
 
             <label for="expenditureDate">支払日:</label>
-            <input type="date" id="expenditureDate" th:field="*{expenditureDate}" required><br>
+            <input type="date" id="expenditureDate" th:field="*{expenditureDate}" required>
+            <p th:if="${#fields.hasErrors('expenditureDate')}" th:errors="*{expenditureDate}"></p><br>
 
             <label for="amount">金額:</label>
-            <input type="number" id="amount" th:field="*{amount}" required><br>
+            <input type="number" id="amount" th:field="*{amount}" required>
+            <p th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></p><br>
+
 
             <label for="categoryId">カテゴリ:</label>
             <select id="categoryId" th:field="*{categoryId}" required>

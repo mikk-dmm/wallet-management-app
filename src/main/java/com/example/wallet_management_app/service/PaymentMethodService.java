@@ -3,8 +3,12 @@ package com.example.wallet_management_app.service;
 import java.util.List;
 import com.example.wallet_management_app.entity.PaymentMethod;
 import com.example.wallet_management_app.entity.User;
+import com.example.wallet_management_app.exception.PaymentMethodNotFoundException;
 import com.example.wallet_management_app.repository.PaymentMethodRepository;
 import com.example.wallet_management_app.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.example.wallet_management_app.repository.ExpenditureRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +28,16 @@ public class PaymentMethodService {
 
     public PaymentMethod findPaymentMethod(Long userId, Long paymentMethodId) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment method not found"));
+                .orElseThrow(() -> new PaymentMethodNotFoundException("Payment method not found"));
 
         if (!paymentMethod.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Payment method does not belong to the user");
+            throw new PaymentMethodNotFoundException("Payment method not found");
         }
 
         return paymentMethod;
     }
 
+    @Transactional
     public void createPaymentMethod(Long userId, String name) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -48,6 +53,7 @@ public class PaymentMethodService {
         paymentMethodRepository.save(paymentMethod);
     }
 
+    @Transactional
     public void updatePaymentMethod(Long userId, Long paymentMethodId, String name) {
         PaymentMethod paymentMethod = findPaymentMethod(userId, paymentMethodId);
 
@@ -60,6 +66,7 @@ public class PaymentMethodService {
         paymentMethodRepository.save(paymentMethod);
     }
 
+    @Transactional
     public void deletePaymentMethod(Long userId, Long paymentMethodId) {
         PaymentMethod paymentMethod = findPaymentMethod(userId, paymentMethodId);
 
