@@ -49,9 +49,12 @@ public class ExpenditureController {
         if (targetMonth == null) {
             targetMonth = YearMonth.now();
         }
+        List<Expenditure> expenditureEntities = expenditureService.findExpenditures(userId, targetMonth);
 
         List<ExpenditureDisplayDto> expenditures =
-            expenditureService.findExpenditures(userId, targetMonth);
+                expenditureEntities.stream()
+                            .map(expenditure -> toDisplayDto(expenditure))
+                            .toList();
 
         BigDecimal monthlyExpenseTotal =
                     expenditureService.calculateMonthlyExpenseTotal(userId, targetMonth);
@@ -187,5 +190,16 @@ public class ExpenditureController {
         expenditureService.deleteExpenditure(userId, expenditureId);
 
         return "redirect:/expenditures";
+    }
+
+    private ExpenditureDisplayDto toDisplayDto(Expenditure expenditure) {
+        return new ExpenditureDisplayDto(
+            expenditure.getId(),
+            expenditure.getName(),
+            expenditure.getExpenditureDate(),
+            expenditure.getAmount(),
+            expenditure.getCategory().getName(),
+            expenditure.getPaymentMethod().getName()
+        );
     }
 }

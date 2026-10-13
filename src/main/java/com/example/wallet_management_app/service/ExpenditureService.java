@@ -16,7 +16,6 @@ import com.example.wallet_management_app.repository.ExpenditureRepository;
 import com.example.wallet_management_app.repository.UserRepository;
 import com.example.wallet_management_app.repository.CategoryRepository;
 import com.example.wallet_management_app.repository.PaymentMethodRepository;
-import com.example.wallet_management_app.dto.ExpenditureDisplayDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ExpenditureService {
     private final CategoryRepository categoryRepository;
     private final PaymentMethodRepository paymentMethodRepository;
 
-    public List<ExpenditureDisplayDto> findExpenditures(Long userId, YearMonth targetMonth) {
+    public List<Expenditure> findExpenditures(Long userId, YearMonth targetMonth) {
         LocalDate periodStart = targetMonth.atDay(1);
         LocalDate periodEnd = targetMonth.atEndOfMonth();
 
@@ -42,15 +41,7 @@ public class ExpenditureService {
                         periodStart,
                         periodEnd
                     );
-        return expenditures.stream()
-                    .map(expenditure -> new ExpenditureDisplayDto(
-                            expenditure.getId(),
-                            expenditure.getName(),
-                            expenditure.getExpenditureDate(),
-                            expenditure.getAmount(),
-                            expenditure.getCategory().getName(),
-                            expenditure.getPaymentMethod().getName()
-                    )).toList();
+        return expenditures;
     }
     
     public Expenditure findExpenditure(Long userId, Long expenditureId) {
@@ -98,7 +89,7 @@ public class ExpenditureService {
     }
 
     @Transactional
-    public void createExpenditure(
+    public Expenditure createExpenditure(
         Long userId,
         Long categoryId,
         Long paymentMethodId,
@@ -122,7 +113,7 @@ public class ExpenditureService {
         expenditure.setExpenditureDate(expenditureDate);
         expenditure.setMemo(memo);
 
-        expenditureRepository.save(expenditure);
+        return expenditureRepository.save(expenditure);
     }
 
     @Transactional
