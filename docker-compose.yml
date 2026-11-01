@@ -26,5 +26,14 @@ services:
     ports:
       - "127.0.0.1:8081:8080"
 
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8088:80"
+    depends_on:
+      - springboot
+
 volumes:
   mysql_data:
