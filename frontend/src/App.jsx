@@ -12,9 +12,16 @@ function App() {
 
   const fetchExpenditure = () => {
     fetch('/api/expenditures')
-      .then(response => response.json())
+      .then(response => {
+        if (response.status == 401) {
+          window.location.href = '/login';
+          return null;
+        }
+        return response.json();
+      })
       .then(data => {
-        setExpenditures(data)
+        if(data == null) return;
+        setExpenditures(data);
       })
   }
 
@@ -100,6 +107,7 @@ function App() {
   return (
     <>
       <h1>Hello Expenditures</h1>
+      <a href="/dashboard">Dashboardへ戻る</a>
       <button onClick={handleCreate}>新規登録</button>
       <button onClick={handleClose}>閉じる</button>
 
