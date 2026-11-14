@@ -1,0 +1,12 @@
+services:
+  mysql:
+    ports:
+      - "3307:3306"
+  
+  springboot:
+    ports:
+      - "127.0.0.1:8081:8080"
+  
+  nginx:
+    ports:
+      - "127.0.0.1:8088:80"

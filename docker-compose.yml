@@ -5,9 +5,17 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
       MYSQL_DATABASE: wallet_management_app
+      MYSQL_USER: wallet_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
       TZ: Asia/Tokyo
-    ports:
-      - "3307:3306"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql --protocol=TCP -h 127.0.0.1 -u "$${MYSQL_USER}" "$${MYSQL_DATABASE}" -e "SELECT 1" >/dev/null 2>&1'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -22,16 +30,13 @@ services:
       DB_USERNAME: wallet_user
       DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     depends_on:
-      - mysql
-    ports:
-      - "127.0.0.1:8081:8080"
+      mysql:
+        condition: service_healthy
 
   nginx:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "127.0.0.1:8088:80"
     depends_on:
       - springboot
 
