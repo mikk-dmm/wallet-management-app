@@ -2,6 +2,7 @@ services:
   nginx:
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - acme_webroot:/var/www/certbot:ro
       - letsencrypt:/etc/letsencrypt:ro
