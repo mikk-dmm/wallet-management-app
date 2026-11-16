@@ -4,6 +4,7 @@ services:
       - "80:80"
     volumes:
       - acme_webroot:/var/www/certbot:ro
+      - letsencrypt:/etc/letsencrypt:ro
 
   certbot:
     image: certbot/certbot
@@ -11,6 +12,8 @@ services:
       - tls
     volumes:
       - acme_webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
 
 volumes:
   acme_webroot:
+  letsencrypt:
