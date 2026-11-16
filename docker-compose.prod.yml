@@ -2,3 +2,15 @@ services:
   nginx:
     ports:
       - "80:80"
+    volumes:
+      - acme_webroot:/var/www/certbot:ro
+
+  certbot:
+    image: certbot/certbot
+    profiles:
+      - tls
+    volumes:
+      - acme_webroot:/var/www/certbot
+
+volumes:
+  acme_webroot:
