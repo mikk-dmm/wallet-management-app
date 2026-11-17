@@ -6,7 +6,7 @@ Java / Spring BootとReactを使用して個人開発している家計管理Web
 
 ## 公開環境・デモ
 
-**公開URL：** [HTTPSの公開URLを記載]
+**公開URL：** https://walllet-mkk.duckdns.org
 
 AWS EC2上にデプロイし、独自のサブドメインによる名前解決とHTTPSによるアクセスを確認しています。
 
