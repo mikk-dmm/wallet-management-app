@@ -1,40 +1,77 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, inicial-scale=1.0">
-        <title>月別予算一覧</title>
-    </head>
-    <body>
-        <h1>月別予算一覧</h1>
-        <button onclick="location.href='/dashboard'">ダッシュボードに戻る</button>
-        <button onclick="location.href='/budgets/monthlyBudget/new'">新規予算登録</button>
-        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>月</th>
-                    <th>予算額</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="monthlyBudget : ${monthlyBudgets}">
-                    <td th:text="${monthlyBudget.targetMonth}"></td>
-                    <td th:text="${monthlyBudget.budgetAmount}">円</td>
-                    <td>
-                        <a th:href="@{/budgets/monthlyBudget/edit/{targetMonth}(targetMonth=${monthlyBudget.targetMonth})}">編集</a>
-                    </td>
-                    <td>
-                        <form th:action="@{/budgets/monthlyBudget/{targetMonth}/delete(targetMonth=${monthlyBudget.targetMonth})}"
-                            method="post"
-                            onsubmit="return confirm('予算を削除しますか？')">
-                            <button type="submit">削除</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月別予算一覧</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/monthly-budget.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('monthlyBudget')}"></header>
+
+    <main class="container monthly-budget-page">
+        <div class="page-header">
+            <div>
+                <h1>月別予算</h1>
+                <p class="text-secondary">月ごとの予算を確認・管理できます。</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/budgets/monthlyBudget/new}">
+                新規予算登録
+            </a>
+        </div>
+
+        <div class="alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <section class="card budget-list-card">
+            <h2>登録済みの予算</h2>
+
+            <div th:if="${monthlyBudgets == null or #lists.isEmpty(monthlyBudgets)}"
+                    class="empty-state">
+                <p>月別予算はまだ登録されていません。</p>
+                <a class="btn btn-primary" th:href="@{/budgets/monthlyBudget/new}">
+                    予算を登録する
+                </a>
+            </div>
+
+            <div class="table-scroll"
+                    th:unless="${monthlyBudgets == null or #lists.isEmpty(monthlyBudgets)}">
+                <table class="budget-table">
+                    <thead>
+                        <tr>
+                            <th>対象月</th>
+                            <th class="amount-column">予算額</th>
+                            <th class="action-column">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="monthlyBudget : ${monthlyBudgets}">
+                            <td th:text="${monthlyBudget.targetMonth}"></td>
+                            <td class="amount-column"
+                                th:text="|¥${#numbers.formatInteger(monthlyBudget.budgetAmount, 1, 'COMMA')}|">
+                            </td>
+                            <td>
+                                <div class="budget-actions">
+                                    <a class="btn btn-outline btn-sm"
+                                        th:href="@{/budgets/monthlyBudget/edit/{targetMonth}(targetMonth=${monthlyBudget.targetMonth})}">
+                                        編集
+                                    </a>
+
+                                    <form th:action="@{/budgets/monthlyBudget/{targetMonth}/delete(targetMonth=${monthlyBudget.targetMonth})}"
+                                            method="post"
+                                            onsubmit="return confirm('この月の予算を削除しますか？')">
+                                        <button class="btn btn-danger-outline btn-sm"
+                                                type="submit">
+                                            削除
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

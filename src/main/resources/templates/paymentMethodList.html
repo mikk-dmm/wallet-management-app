@@ -1,38 +1,79 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>支払い方法一覧</title>
-    </head>
-    <body>
-        <h1>支払い方法一覧</h1>
-        <a th:href="@{/dashboard}">ダッシュボードに戻る</a>
-        <a th:href="@{/paymentMethod/new}">新規登録</a>
-        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支払い方法管理</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/payment-method.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('paymentMethods')}"></header>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>支払い方法</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="paymentMethod : ${paymentMethods}">
-                    <td th:text="${paymentMethod.name}"></td>
-                    <td>
-                        <a th:href="@{/paymentMethod/edit/{id}(id=${paymentMethod.id})}">編集</a>
-                    </td>
-                    <td>
-                        <form th:action="@{/paymentMethod/{id}/delete(id=${paymentMethod.id})}"
-                                method="post"
-                                onsubmit="return confirm('支払い方法を削除しますか')">
-                            <button type="submit">削除</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
+    <main class="container payment-method-page">
+        <div class="page-header">
+            <div>
+                <h1>支払い方法管理</h1>
+                <p class="text-secondary">
+                    支出の記録に使用する支払い方法を管理します。
+                </p>
+            </div>
+
+            <a class="btn btn-primary" th:href="@{/paymentMethod/new}">
+                新規支払い方法登録
+            </a>
+        </div>
+
+        <div class="alert-error"
+                th:if="${errorMessage}"
+                th:text="${errorMessage}">
+        </div>
+
+        <section class="card payment-method-list-card">
+            <h2>登録済みの支払い方法</h2>
+
+            <div class="empty-state"
+                    th:if="${paymentMethods == null or #lists.isEmpty(paymentMethods)}">
+                <p>支払い方法はまだ登録されていません。</p>
+                <a class="btn btn-primary" th:href="@{/paymentMethod/new}">
+                    支払い方法を登録する
+                </a>
+            </div>
+
+            <div class="table-scroll"
+                    th:unless="${paymentMethods == null or #lists.isEmpty(paymentMethods)}">
+                <table class="payment-method-table">
+                    <thead>
+                        <tr>
+                            <th>支払い方法</th>
+                            <th class="action-column">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="paymentMethod : ${paymentMethods}">
+                            <td th:text="${paymentMethod.name}"></td>
+                            <td>
+                                <div class="payment-method-actions">
+                                    <a class="btn btn-outline btn-sm"
+                                        th:href="@{/paymentMethod/edit/{id}(id=${paymentMethod.id})}">
+                                        編集
+                                    </a>
+
+                                    <form th:action="@{/paymentMethod/{id}/delete(id=${paymentMethod.id})}"
+                                            method="post"
+                                            onsubmit="return confirm('この支払い方法を削除しますか？')">
+                                        <button type="submit"
+                                                class="btn btn-danger-outline btn-sm">
+                                            削除
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

@@ -88,122 +88,114 @@ const handleSubmit = async (event) => {
 }
 
 return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="expenditure-form">
+        <div className="form-group">
+            <label htmlFor="name">支出名</label>
+            <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="例：スーパーで買い物"
+                aria-invalid={Boolean(errors.name)}
+            />
+            {errors.name && (
+                <p className="field-error">{errors.name}</p>
+            )}
+        </div>
 
-    <div>
-        <label>名前</label>
-        <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-        />
+        <div className="form-group">
+            <label htmlFor="amount">金額</label>
+            <div className="amount-input">
+                <input
+                    id="amount"
+                    type="number"
+                    value={amount}
+                    onChange={(event) => setAmount(event.target.value)}
+                    placeholder="例：3000"
+                    aria-invalid={Boolean(errors.amount)}
+                />
+                <span>円</span>
+            </div>
+            {errors.amount && (
+                <p className="field-error">{errors.amount}</p>
+            )}
+        </div>
 
-        {errors.name && (
-            <p>{errors.name}</p>
-        )}
-    </div>
+        <div className="form-group">
+            <label htmlFor="expenditureDate">支出日</label>
+            <input
+                id="expenditureDate"
+                type="date"
+                value={expenditureDate}
+                onChange={(event) => setExpenditureDate(event.target.value)}
+                aria-invalid={Boolean(errors.expenditureDate)}
+            />
+            {errors.expenditureDate && (
+                <p className="field-error">{errors.expenditureDate}</p>
+            )}
+        </div>
 
-
-    <div>
-        <label>金額</label>
-        <input
-            type="number"
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-        />
-
-        {errors.amount && (
-            <p>{errors.amount}</p>
-        )}
-    </div>
-
-
-    <div>
-        <label>支出日</label>
-        <input
-            type="date"
-            value={expenditureDate}
-            onChange={(event) => setExpenditureDate(event.target.value)}
-        />
-
-        {errors.expenditureDate && (
-            <p>{errors.expenditureDate}</p>
-        )}
-    </div>
-
-
-    <div>
-        <label>カテゴリ</label>
-
-        <select
-            value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-        >
-        <option value="">
-            選択してください
-        </option>
-
-        {categories.map((category) => (
-            <option
-                key={category.id}
-                value={category.id}
+        <div className="form-group">
+            <label htmlFor="categoryId">カテゴリ</label>
+            <select
+                id="categoryId"
+                value={categoryId}
+                onChange={(event) => setCategoryId(event.target.value)}
+                aria-invalid={Boolean(errors.categoryId)}
             >
-            {category.categoryName}
-            </option>
-        ))}
-        </select>
+                <option value="">選択してください</option>
+                {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                        {category.categoryName}
+                    </option>
+                ))}
+            </select>
+            {errors.categoryId && (
+                <p className="field-error">{errors.categoryId}</p>
+            )}
+        </div>
 
-        {errors.categoryId && (
-            <p>{errors.categoryId}</p>
-        )}
-    </div>
-
-
-    <div>
-        <label>支払い方法</label>
-
-        <select
-            value={paymentMethodId}
-            onChange={(event) => setPaymentMethodId(event.target.value)}
-        >
-        <option value="">
-            選択してください
-        </option>
-
-        {paymentMethods.map((paymentMethod) => (
-            <option
-                key={paymentMethod.id}
-                value={paymentMethod.id}
+        <div className="form-group">
+            <label htmlFor="paymentMethodId">支払い方法</label>
+            <select
+                id="paymentMethodId"
+                value={paymentMethodId}
+                onChange={(event) => setPaymentMethodId(event.target.value)}
+                aria-invalid={Boolean(errors.paymentMethodId)}
             >
-            {paymentMethod.paymentMethodName}
-            </option>
-        ))}
-        </select>
+                <option value="">選択してください</option>
+                {paymentMethods.map((paymentMethod) => (
+                    <option key={paymentMethod.id} value={paymentMethod.id}>
+                        {paymentMethod.paymentMethodName}
+                    </option>
+                ))}
+            </select>
+            {errors.paymentMethodId && (
+                <p className="field-error">{errors.paymentMethodId}</p>
+            )}
+        </div>
 
-        {errors.paymentMethodId && (
-            <p>{errors.paymentMethodId}</p>
-        )}
-    </div>
+        <div className="form-group form-group-full">
+            <label htmlFor="memo">メモ</label>
+            <textarea
+                id="memo"
+                value={memo}
+                onChange={(event) => setMemo(event.target.value)}
+                placeholder="必要に応じてメモを入力"
+                rows={3}
+                aria-invalid={Boolean(errors.memo)}
+            />
+            {errors.memo && (
+                <p className="field-error">{errors.memo}</p>
+            )}
+        </div>
 
-
-    <div>
-        <label>メモ</label>
-
-        <textarea
-            value={memo}
-            onChange={(event) => setMemo(event.target.value)}
-        />
-
-        {errors.memo && (
-            <p>{errors.memo}</p>
-        )}
-    </div>
-
-
-    <button type="submit">
-        {editingExpenditure ? '更新' : '登録'}
-    </button>
-
+        <div className="form-actions">
+            <button type="submit" className="btn btn-primary">
+                {editingExpenditure ? '更新する' : '登録する'}
+            </button>
+        </div>
     </form>
 )
 }

@@ -1,39 +1,88 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>カテゴリ一覧</title>
-    </head>
-    <body>
-        <h1>カテゴリ一覧</h1>
-        <a th:href="@{/dashboard}">ダッシュボードに戻る</a>
-        <a th:href="@{/category/new}">新規登録</a>
-        <a th:href="@{/budgets/categoryBudget}">カテゴリ別予算一覧</a>
-        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カテゴリ管理</title>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>カテゴリ名</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="category : ${categories}">
-                    <td th:text="${category.name}"></td>
-                    <td>
-                        <a th:href="@{/category/edit/{categoryId}(categoryId=${category.id})}">編集</a>
-                    </td>
-                    <td>
-                        <form th:action="@{/category/{categoryId}/delete(categoryId=${category.id})}"
-                                method="post"
-                                onsubmit="return confirm('カテゴリを削除しますか')">
-                            <button type="submit">削除</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/category.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('categoies')}"></header>
+
+    <main class="container category-page">
+        <div class="page-header">
+            <div>
+                <h1>カテゴリ管理</h1>
+                <p class="text-secondary">
+                    支出の分類に使用するカテゴリを管理します。
+                </p>
+            </div>
+
+            <a class="btn btn-primary" th:href="@{/category/new}">
+                新規カテゴリ登録
+            </a>
+        </div>
+
+        <div class="alert-error"
+                th:if="${errorMessage}"
+                th:text="${errorMessage}">
+        </div>
+
+        <section class="card category-list-card">
+            <div class="section-header">
+                <h2>登録済みのカテゴリ</h2>
+                <a class="category-budget-link"
+                    th:href="@{/budgets/categoryBudget}">
+                    カテゴリ別予算を見る
+                </a>
+            </div>
+
+            <div class="empty-state"
+                    th:if="${categories == null or #lists.isEmpty(categories)}">
+                <p>カテゴリはまだ登録されていません。</p>
+                <a class="btn btn-primary" th:href="@{/category/new}">
+                    カテゴリを登録する
+                </a>
+            </div>
+
+            <div class="table-scroll"
+                    th:unless="${categories == null or #lists.isEmpty(categories)}">
+                <table class="category-table">
+                    <thead>
+                        <tr>
+                            <th>カテゴリ名</th>
+                            <th class="action-column">操作</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="category : ${categories}">
+                            <td th:text="${category.name}"></td>
+
+                            <td>
+                                <div class="category-actions">
+                                    <a class="btn btn-outline btn-sm"
+                                        th:href="@{/category/edit/{categoryId}(categoryId=${category.id})}">
+                                        編集
+                                    </a>
+
+                                    <form th:action="@{/category/{categoryId}/delete(categoryId=${category.id})}"
+                                            method="post"
+                                            onsubmit="return confirm('このカテゴリを削除しますか？')">
+                                        <button type="submit"
+                                                class="btn btn-danger-outline btn-sm">
+                                            削除
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

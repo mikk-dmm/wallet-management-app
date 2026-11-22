@@ -1,44 +1,87 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>カテゴリ予算一覧</title>
-    </head>
-    <body>
-        <h1>カテゴリ予算一覧</h1>
-        <button onclick="location.href='/dashboard'">ダッシュボードに戻る</button>
-        <p th:text="${targetMonth}"></p>
-        <button onclick="location.href='/budgets/categoryBudget/new'">新規カテゴリ予算作成</button>
-        <p th:if="${errorMessage}" th:text="${errorMessage}">すでに登録されています</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>カテゴリ名</th>
-                    <th>予算額</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="categoryBudget : ${categoryBudgets}">
-                    <td th:text="${categoryBudget.categoryName}"></td>
-                    <td>
-                        <span th:text="${categoryBudget.budgetAmount}"></span>円
-                    </td>
-                    <td>
-                        <button type="button"
-                                th:onclick="|location.href='@{/budgets/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}
-                                                                            (categoryId=${categoryBudget.categoryId}, targetMonth=${categoryBudget.targetMonth})}'|">
-                                編集
-                    </button>
-                        <form th:action="@{/budgets/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete(categoryId=${categoryBudget.categoryId}, targetMonth=${targetMonth})}"
-                                method="post"
-                                onsubmit="return confirm('予算設定を削除しますか？');">
-                            <button type="submit">削除</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カテゴリ別予算</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/category-budget.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('categoryBudget')}"></header>
+
+    <main class="container category-budget-page">
+        <div class="page-header">
+            <div>
+                <h1>カテゴリ別予算</h1>
+                <p class="text-secondary">
+                    <span th:text="${targetMonth}"></span>
+                    のカテゴリ別予算を管理します。
+                </p>
+            </div>
+            <a class="btn btn-primary"
+                th:href="@{/budgets/categoryBudget/new}">
+                新規予算登録
+            </a>
+        </div>
+
+        <div class="alert-error"
+                th:if="${errorMessage}"
+                th:text="${errorMessage}">
+        </div>
+
+        <section class="card category-budget-list-card">
+            <h2>登録済みの予算</h2>
+
+            <div class="empty-state"
+                    th:if="${categoryBudgets == null or #lists.isEmpty(categoryBudgets)}">
+                <p>カテゴリ別予算はまだ登録されていません。</p>
+                <a class="btn btn-primary"
+                    th:href="@{/budgets/categoryBudget/new}">
+                    予算を登録する
+                </a>
+            </div>
+
+            <div class="table-scroll"
+                    th:unless="${categoryBudgets == null or #lists.isEmpty(categoryBudgets)}">
+                <table class="category-budget-table">
+                    <thead>
+                        <tr>
+                            <th>カテゴリ名</th>
+                            <th class="amount-column">予算額</th>
+                            <th class="action-column">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="categoryBudget : ${categoryBudgets}">
+                            <td th:text="${categoryBudget.categoryName}"></td>
+
+                            <td class="amount-column"
+                                th:text="|¥${#numbers.formatInteger(categoryBudget.budgetAmount, 1, 'COMMA')}|">
+                            </td>
+
+                            <td>
+                                <div class="category-budget-actions">
+                                    <a class="btn btn-outline btn-sm"
+                                        th:href="@{/budgets/categoryBudget/edit/categories/{categoryId}/month/{targetMonth}(categoryId=${categoryBudget.categoryId}, targetMonth=${categoryBudget.targetMonth})}">
+                                        編集
+                                    </a>
+
+                                    <form th:action="@{/budgets/categoryBudget/categories/{categoryId}/month/{targetMonth}/delete(categoryId=${categoryBudget.categoryId}, targetMonth=${targetMonth})}"
+                                            method="post"
+                                            onsubmit="return confirm('このカテゴリの予算設定を削除しますか？')">
+                                        <button class="btn btn-danger-outline btn-sm"
+                                                type="submit">
+                                            削除
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

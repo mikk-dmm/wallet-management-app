@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<header class="site-header" th:fragment="header(activePage)">
+    <div class="header-inner">
+
+        <div class="header-top">
+            <a class="brand" th:href="@{/dashboard}">
+                Wallet Management
+            </a>
+
+            <form th:action="@{/logout}" method="post">
+                <button class="btn btn-secondary" type="submit">
+                    ログアウト
+                </button>
+            </form>
+        </div>
+
+        <nav class="navigation">
+            <a th:href="@{/dashboard}"
+                th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+                ダッシュボード
+            </a>
+
+            <a th:href="@{/expenditures}"
+                th:classappend="${activePage == 'expenditures'} ? 'active' : ''">
+                支出管理
+            </a>
+
+            <a th:href="@{/budgets/monthlyBudget}"
+                th:classappend="${activePage == 'monthlyBudget'} ? 'active' : ''">
+                月間予算
+            </a>
+
+            <a th:href="@{/budgets/categoryBudget}"
+                th:classappend="${activePage == 'categoryBudget'} ? 'active' : ''">
+                カテゴリ別予算
+            </a>
+
+            <a th:href="@{/categories}"
+                th:classappend="${activePage == 'categories'} ? 'active' : ''">
+                カテゴリ
+            </a>
+
+            <a th:href="@{/paymentMethods}"
+                th:classappend="${activePage == 'paymentMethods'} ? 'active' : ''">
+                支払方法
+            </a>
+        </nav>
+
+    </div>
+</header>
+
+</body>
+</html>
