@@ -1,0 +1,154 @@
+
+.dashboard .page-header {
+    margin-bottom: 24px;
+}
+
+.dashboard .page-header h1 {
+    margin-bottom: 8px;
+}
+
+.dashboard .page-header p {
+    margin: 0;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    margin-bottom: 0;
+    min-width: 0;
+}
+
+.summary-label {
+    margin: 0 0 14px;
+    color: var(--text-secondary, #6B7280);
+    font-size: 14px;
+}
+
+.summary-amount {
+    margin: 0;
+    font-size: clamp(22px, 2.4vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.progress-info,
+.progress-details,
+.category-progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.progress-info {
+    margin-bottom: 12px;
+}
+
+.progress-info strong {
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+    width: 100%;
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #E5E7EB;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: #287A60;
+}
+
+.progress-warning {
+    background: #B45309;
+}
+
+.progress-danger {
+    background: #DC2626;
+}
+
+.progress-details {
+    margin-top: 12px;
+    color: var(--text-secondary, #6B7280);
+    font-size: 13px;
+}
+
+.category-card .table-wrapper {
+    width: 100%;
+}
+
+.category-card table {
+    width: 100%;
+}
+
+.category-progress {
+    min-width: 130px;
+    width: 18%;
+}
+
+.category-progress-info {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.progress-track-small {
+    height: 6px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 0 4px;
+}
+
+.empty-state p {
+    margin: 0;
+    color: var(--text-secondary, #6B7280);
+}
+
+@media (max-width: 767px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .summary-amount {
+        font-size: 26px;
+    }
+
+    .progress-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .category-progress {
+        min-width: 110px;
+    }
+}

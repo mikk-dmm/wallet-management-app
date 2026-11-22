@@ -1,27 +1,90 @@
 <!DOCTYPE html>
-<html lang="ja" xmlns="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>月別予算登録</title>
-    </head>
-    <body>
-        <h1>月別予算登録</h1>
-        <p th:if="${errorMessage}" th:text="${errorMessage}"></p>
-        <form th:action="${monthlyBudgetForm.targetMonth == null}
-                        ? @{/budgets/monthlyBudget}
-                        : @{/budgets/monthlyBudget/edit/{targetMonth}(targetMonth=${monthlyBudgetForm.targetMonth})}"
-                th:object="${monthlyBudgetForm}"
-                method="post">
-            <label for="targetMonth">対象月</label>
-            <input type="month" id="targetMonth" th:field="*{targetMonth}" required><br>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月別予算登録・編集</title>
 
-            <label for="budgetAmount">予算額</label>
-            <input type="number" id="budgetAmount" th:field="*{budgetAmount}" required><br>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/monthly-budget.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('monthlyBudget')}"></header>
 
-            <button type="submit"
-                    th:text="${targetMonth == null} ? '登録' : '更新'"></button>
-            <button type="button" onclick="location.href='/budgets/monthlyBudget'">キャンセル</button>
-        </form>
-    </body>
+    <main class="container monthly-budget-page">
+
+        <div class="page-header">
+            <div>
+                <h1 th:text="${targetMonth == null} ? '月別予算の登録' : '月別予算の編集'">
+                    月別予算の登録
+                </h1>
+                <p class="text-secondary">
+                    対象月と予算額を設定します。
+                </p>
+            </div>
+        </div>
+
+        <div class="alert-error"
+                th:if="${errorMessage}"
+                th:text="${errorMessage}">
+        </div>
+
+        <section class="card budget-form-card">
+
+            <form th:action="${targetMonth == null}
+                                ? @{/budgets/monthlyBudget}
+                                : @{/budgets/monthlyBudget/edit/{targetMonth}(targetMonth=${targetMonth})}"
+                    th:object="${monthlyBudgetForm}"
+                    method="post">
+
+                <div class="form-group">
+                    <label for="targetMonth">対象月</label>
+
+                    <input type="month"
+                            id="targetMonth"
+                            th:field="*{targetMonth}"
+                            th:readonly="${targetMonth != null}"
+                            required>
+
+                    <p class="form-hint">
+                        予算を設定する月を選択してください。
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="budgetAmount">予算額</label>
+
+                    <div class="amount-input">
+                        <input type="number"
+                                id="budgetAmount"
+                                th:field="*{budgetAmount}"
+                                min="0"
+                                step="1"
+                                placeholder="例：80000"
+                                required>
+                        <span>円</span>
+                    </div>
+
+                    <p class="form-hint">
+                        1か月の予算額を円単位で入力してください。
+                    </p>
+                </div>
+
+                <div class="form-actions">
+                    <a class="btn btn-outline"
+                        th:href="@{/budgets/monthlyBudget}">
+                        キャンセル
+                    </a>
+
+                    <button class="btn btn-primary"
+                            type="submit"
+                            th:text="${targetMonth == null} ? '登録する' : '更新する'">
+                        登録する
+                    </button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+</body>
 </html>

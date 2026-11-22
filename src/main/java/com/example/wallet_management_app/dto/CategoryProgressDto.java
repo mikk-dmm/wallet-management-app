@@ -16,5 +16,5 @@ public class CategoryProgressDto {
 
     private BigDecimal remainingAmount;
 
-    private int progressRate; // 0~100
+    private int progressRate;
 }

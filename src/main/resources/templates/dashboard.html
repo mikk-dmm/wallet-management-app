@@ -1,66 +1,154 @@
+
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ダッシュボード</title>
-    </head>
-    <body>
-        
-        <h1>ダッシュボード</h1>
-        <button onclick="location.href='/expenditures'">支出一覧</button>
-        <button onclick="location.href='/budgets/categoryBudget'">カテゴリ予算一覧</button>
-        <button onclick="location.href='/budgets/monthlyBudget'">月別予算一覧</button>
-        <button onclick="location.href='/categories'">カテゴリ一覧</button>
-        <button onclick="location.href='/paymentMethods'">支払い方法一覧</button>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">ログアウト</button>
-        </form>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+    <header th:replace="~{fragments/header :: header('dashboard')}"></header>
 
-        <p>
-            <span th:text="${dashboard.targetMonth}"></span>
-            のダッシュボード
-        </p>
+    <main class="container dashboard">
+        <div class="page-header">
+            <div>
+                <h1>ダッシュボード</h1>
+                <p class="text-secondary"
+                    th:text="|${dashboard.targetMonth}の家計状況|">
+                </p>
+            </div>
+        </div>
 
-        <p>
-            月予算：
-            <span th:text="${dashboard.monthlyBudget}"></span>
-        </p>
+        <section class="summary-grid" aria-label="月間サマリー">
+            <div class="card summary-card">
+                <p class="summary-label">月間予算</p>
+                <p class="summary-amount"
+                    th:text="|¥${#numbers.formatInteger(dashboard.monthlyBudget, 1, 'COMMA')}|">
+                </p>
+            </div>
 
-        <p>
-            支出合計：
-            <span th:text="${dashboard.monthlyExpenseTotal}"></span>
-        </p>
+            <div class="card summary-card">
+                <p class="summary-label">支出合計</p>
+                <p class="summary-amount"
+                    th:text="|¥${#numbers.formatInteger(dashboard.monthlyExpenseTotal, 1, 'COMMA')}|">
+                </p>
+            </div>
 
-        <p>
-            残額：
-            <span th:text="${dashboard.remainingAmount}"></span>
-        </p>
+            <div class="card summary-card">
+                <p class="summary-label">残り予算</p>
+                <p class="summary-amount"
+                    th:classappend="${dashboard.remainingAmount.signum() < 0} ? 'text-danger' : 'text-success'"
+                    th:text="|¥${#numbers.formatInteger(dashboard.remainingAmount, 1, 'COMMA')}|">
+                </p>
+            </div>
+        </section>
 
+        <section class="card budget-card">
+            <div class="section-header">
+                <h2>月間予算の使用状況</h2>
+            </div>
 
-        <h2>カテゴリ別支払い状況</h2>
+            <th:block th:if="${dashboard.monthlyBudget.signum() > 0}"
+                    th:with="usageRate=${dashboard.monthlyExpenseTotal
+                        .divide(dashboard.monthlyBudget, 4, T(java.math.RoundingMode).HALF_UP)
+                        .multiply(T(java.math.BigDecimal).valueOf(100L))},
+                        barWidth=${T(java.lang.Math).min(100.0, T(java.lang.Math).max(0.0, usageRate.doubleValue()))}">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>カテゴリ</th>
-                    <th>予算</th>
-                    <th>支出</th>
-                    <th>残額</th>
-                    <th>進捗率</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="progress : ${dashboard.categoryProgressList}">
-                    <td th:text="${progress.categoryName}"></td>
-                    <td th:text="${progress.budgetAmount}"></td>
-                    <td th:text="${progress.expenseAmount}"></td>
-                    <td th:text="${progress.remainingAmount}"></td>
-                    <td>
-                        <span th:text="${progress.progressRate}"></span>%
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </body>
+                <div class="progress-info">
+                    <span class="text-secondary">予算の使用率</span>
+                    <strong th:classappend="${usageRate.doubleValue() >= 100} ? 'text-danger' : ''"
+                            th:text="|${#numbers.formatDecimal(usageRate, 1, 1)}%|">
+                    </strong>
+                </div>
+
+                <div class="progress-track"
+                        role="progressbar"
+                        aria-label="月間予算の使用率"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        th:attr="aria-valuenow=${barWidth}">
+                    <div class="progress-fill"
+                        th:classappend="${usageRate.doubleValue() >= 100} ? 'progress-danger' : (${usageRate.doubleValue() >= 80} ? 'progress-warning' : '')"
+                        th:style="|width: ${barWidth}%|">
+                    </div>
+                </div>
+
+                <div class="progress-details">
+                    <span th:text="|使用済み ¥${#numbers.formatInteger(dashboard.monthlyExpenseTotal, 1, 'COMMA')}|"></span>
+                    <span th:text="|予算 ¥${#numbers.formatInteger(dashboard.monthlyBudget, 1, 'COMMA')}|"></span>
+                </div>
+            </th:block>
+
+            <div class="empty-state"
+                    th:unless="${dashboard.monthlyBudget.signum() > 0}">
+                <p>月間予算が設定されていません。</p>
+                <a class="btn btn-primary" th:href="@{/budgets/monthlyBudget}">
+                    月間予算を設定する
+                </a>
+            </div>
+        </section>
+
+        <section class="card category-card">
+            <div class="section-header">
+                <h2>カテゴリ別支出状況</h2>
+            </div>
+
+            <div class="table-wrapper"
+                    th:if="${!#lists.isEmpty(dashboard.categoryProgressList)}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>カテゴリ</th>
+                            <th class="amount">予算</th>
+                            <th class="amount">支出</th>
+                            <th class="amount">残額</th>
+                            <th>使用率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="progress : ${dashboard.categoryProgressList}">
+                            <td th:text="${progress.categoryName}"></td>
+
+                            <td class="amount"
+                                th:text="|¥${#numbers.formatInteger(progress.budgetAmount, 1, 'COMMA')}|">
+                            </td>
+
+                            <td class="amount"
+                                th:text="|¥${#numbers.formatInteger(progress.expenseAmount, 1, 'COMMA')}|">
+                            </td>
+
+                            <td class="amount"
+                                th:classappend="${progress.remainingAmount.signum() < 0} ? 'text-danger' : ''"
+                                th:text="|¥${#numbers.formatInteger(progress.remainingAmount, 1, 'COMMA')}|">
+                            </td>
+
+                            <td class="category-progress">
+                                <div class="category-progress-info">
+                                    <span th:text="|${#numbers.formatDecimal(progress.progressRate, 1, 1)}%|"></span>
+                                </div>
+
+                                <div class="progress-track progress-track-small">
+                                    <div class="progress-fill"
+                                            th:classappend="${progress.progressRate >= 100} ? 'progress-danger' : (${progress.progressRate >= 80} ? 'progress-warning' : '')"
+                                            th:style="|width: ${progress.progressRate < 0 ? 0 : (progress.progressRate > 100 ? 100 : progress.progressRate)}%|"
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state"
+                    th:if="${#lists.isEmpty(dashboard.categoryProgressList)}">
+                <p>カテゴリ別予算がまだ設定されていません。</p>
+                <a class="btn btn-primary" th:href="@{/budgets/categoryBudget}">
+                    カテゴリ別予算を設定する
+                </a>
+            </div>
+        </section>
+    </main>
+</body>
 </html>
