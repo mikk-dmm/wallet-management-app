@@ -152,3 +152,8 @@
         min-width: 110px;
     }
 }
+
+.dashboard-page-header {
+    align-items: center;
+}
+

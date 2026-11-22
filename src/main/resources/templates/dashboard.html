@@ -12,16 +12,51 @@
     <header th:replace="~{fragments/header :: header('dashboard')}"></header>
 
     <main class="container dashboard">
-        <div class="page-header">
+        <div class="page-header dashboard-page-header">
             <div>
                 <h1>ダッシュボード</h1>
                 <p class="text-secondary"
                     th:text="|${dashboard.targetMonth}の家計状況|">
                 </p>
             </div>
+        
+            <div class="month-navigation">
+                <div class="month-switcher">
+                    <a class="month-arrow"
+                        aria-label="前月へ"
+                        th:href="@{/dashboard(targetMonth=${dashboard.targetMonth.minusMonths(1)})}">
+                        &#8249;
+                    </a>
+                
+                    <span class="current-month"
+                        th:text="${dashboard.targetMonth.year} + '年' + ${dashboard.targetMonth.monthValue} + '月'">
+                    </span>
+                
+                    <a class="month-arrow"
+                        aria-label="翌月へ"
+                        th:href="@{/dashboard(targetMonth=${dashboard.targetMonth.plusMonths(1)})}">
+                        &#8250;
+                    </a>
+                </div>
+            
+                <form class="month-picker-form"
+                    th:action="@{/dashboard}"
+                    method="get">
+                    <input
+                        type="month"
+                        name="targetMonth"
+                        aria-label="表示対象月"
+                        th:value="${dashboard.targetMonth}">
+            
+                    <button class="btn btn-secondary" type="submit">
+                        表示
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <section class="summary-grid" aria-label="月間サマリー">
+
+            <section class="summary-grid" aria-label="月間サマリー">
             <div class="card summary-card">
                 <p class="summary-label">月間予算</p>
                 <p class="summary-amount"

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.validation.BindingResult;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.Valid;
 
@@ -158,21 +159,21 @@ public class BudgetController {
 
     @GetMapping("/categoryBudget")
     public String showCategoryBudgets(
-        @RequestParam(required = false) YearMonth targetMonth,
+        @RequestParam(required = false)
+        @DateTimeFormat(pattern = "yyyy-MM")
+        YearMonth targetMonth,
         @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
         Long userId = userDetails.getUserId();
 
-        if (targetMonth == null) {
-            targetMonth = YearMonth.now();
-        }
+        YearMonth displayMonth = targetMonth != null ? targetMonth : YearMonth.now();
 
         List<CategoryBudgetDisplayDto> categoryBudgets =
-        budgetService.findCategoryBudgets(userId, targetMonth);
+        budgetService.findCategoryBudgets(userId, displayMonth);
 
         model.addAttribute("categoryBudgets", categoryBudgets);
-        model.addAttribute("targetMonth", targetMonth);
+        model.addAttribute("targetMonth", displayMonth);
 
         return "categoryBudgetList";
     }
@@ -180,6 +181,9 @@ public class BudgetController {
     @GetMapping("/categoryBudget/new")
     public String showCategoryBudgetForm(
         @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(required = false)
+        @DateTimeFormat(pattern = "yyyy-MM")
+        YearMonth targetMonth,
         Model model
     ) {
         
@@ -187,7 +191,10 @@ public class BudgetController {
 
         List<Category> categories = categoryService.getCategories(userId);
 
+        YearMonth displayMonth = targetMonth != null ? targetMonth : YearMonth.now();
+
         CategoryBudgetForm form = new CategoryBudgetForm();
+        form.setTargetMonth(displayMonth);
 
         model.addAttribute("categoryBudgetForm", form);
         model.addAttribute("categories", categories);
