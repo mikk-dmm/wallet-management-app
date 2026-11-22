@@ -11,19 +11,56 @@
     <header th:replace="~{fragments/header :: header('categoryBudget')}"></header>
 
     <main class="container category-budget-page">
+        
+        
         <div class="page-header">
             <div>
                 <h1>カテゴリ別予算</h1>
-                <p class="text-secondary">
-                    <span th:text="${targetMonth}"></span>
-                    のカテゴリ別予算を管理します。
+                <p class="text-secondary"
+                    th:text="|${targetMonth}のカテゴリ別予算を管理します。|">
                 </p>
             </div>
-            <a class="btn btn-primary"
-                th:href="@{/budgets/categoryBudget/new}">
-                新規予算登録
-            </a>
+        
+            <div class="month-navigation">
+                <div class="month-switcher">
+                    <a class="month-arrow"
+                        aria-label="前月へ"
+                        th:href="@{/budgets/categoryBudget(targetMonth=${targetMonth.minusMonths(1)})}">
+                        &#8249;
+                    </a>
+                
+                    <span class="current-month"
+                        th:text="${targetMonth.year} + '年' + ${targetMonth.monthValue} + '月'">
+                    </span>
+                
+                    <a class="month-arrow"
+                        aria-label="翌月へ"
+                        th:href="@{/budgets/categoryBudget(targetMonth=${targetMonth.plusMonths(1)})}">
+                        &#8250;
+                    </a>
+                </div>
+            
+                <form class="month-picker-form"
+                    th:action="@{/budgets/categoryBudget}"
+                    method="get">
+                    <input type="month"
+                        name="targetMonth"
+                        aria-label="表示対象月"
+                        th:value="${targetMonth}">
+            
+                    <button class="btn btn-secondary" type="submit">
+                        表示
+                    </button>
+                </form>
+            
+                <a class="btn btn-primary"
+                    th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
+                    新規予算登録
+                </a>
+            </div>
         </div>
+
+
 
         <div class="alert-error"
                 th:if="${errorMessage}"
@@ -37,7 +74,7 @@
                     th:if="${categoryBudgets == null or #lists.isEmpty(categoryBudgets)}">
                 <p>カテゴリ別予算はまだ登録されていません。</p>
                 <a class="btn btn-primary"
-                    th:href="@{/budgets/categoryBudget/new}">
+                    th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
                     予算を登録する
                 </a>
             </div>

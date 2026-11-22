@@ -309,3 +309,66 @@ tbody tr:hover {
         padding: 10px 12px;
     }
 }
+
+/* Month Navigation */
+
+.month-navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.month-switcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.month-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.month-arrow:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.current-month {
+    min-width: 100px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.month-picker-form input[type="month"] {
+    width: 155px;
+    flex: 0 0 155px;
+}
+
+.month-picker-form .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .month-picker-form {
+        max-width: 100%;
+    }
+
+    .month-picker-form input[type="month"] {
+        width: 155px;
+        flex: 0 1 155px;
+        min-width: 0;
+    }
+}
