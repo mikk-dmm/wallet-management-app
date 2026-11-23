@@ -11,28 +11,40 @@ function App() {
   const [csrf, setCsrf] =useState(null)
   const [editingExpenditure, setEditingExpenditure] = useState(null)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [targetMonth, setTargetMonth] = useState(() => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    return `${year}-${month}`
+  })
 
-  const fetchExpenditure = () => {
-    fetch('/api/expenditures')
+  const fetchExpenditure = (month) => {
+    return fetch(`/api/expenditures?targetMonth=${month}`)
       .then(response => {
-        if (response.status == 401) {
-          window.location.href = '/login';
-          return null;
+        if (response.status === 401) {
+          window.location.href = '/login'
+          return null
         }
-        return response.json();
+        if (!response.ok) {
+          throw new Error(`支出取得失敗: ${response.status}`)
+        }
+        return response.json()
       })
       .then(data => {
-        if(data == null) return;
-        setExpenditures(data);
+        if (data == null) return
+        setExpenditures(data)
+      })
+      .catch(error => {
+        console.error(error)
       })
   }
 
   useEffect(() => {
-    fetchExpenditure()
-  },[])
+    fetchExpenditure(targetMonth)
+  }, [targetMonth])
 
   const handleSaved = () => {
-    fetchExpenditure()
+    fetchExpenditure(targetMonth)
     setShowForm(false)
     setEditingExpenditure(null)
   }
@@ -87,57 +99,67 @@ function App() {
 
   const handleDelete = async (id) => {
 
-  if (!csrf || !csrf.headerName || !csrf.token) {
-    console.error('CSRF情報がありません')
-    return
-  }
-
-  const response = await fetch(`/api/expenditures/${id}`, {
-    method: 'DELETE',
-    headers: {
-      [csrf.headerName]: csrf.token
-    }
-  })
-
-  if (!response.ok) {
-    console.error('削除に失敗しました:', response.status)
-    return
-  }
-
-  fetchExpenditure()
-}
-
-const handleLogout = async () => {
-  if (isLoggingOut) return
-
-  if (!csrf?.headerName || !csrf?.token) {
-      console.error('CSRF情報が取得できていません')
+    if (!csrf || !csrf.headerName || !csrf.token) {
+      console.error('CSRF情報がありません')
       return
-  }
+    }
 
-  setIsLoggingOut(true)
-
-  try {
-      const response = await fetch('/logout', {
-          method: 'POST',
-          headers: {
-              [csrf.headerName]: csrf.token
-          },
-          credentials: 'same-origin'
-      })
-
-      if (!response.ok) {
-          console.error('ログアウトに失敗しました:', response.status)
-          return
+    const response = await fetch(`/api/expenditures/${id}`, {
+      method: 'DELETE',
+      headers: {
+        [csrf.headerName]: csrf.token
       }
+    })
 
-      window.location.assign('/login')
-  } catch (error) {
-      console.error('ログアウト通信に失敗しました:', error)
-  } finally {
-      setIsLoggingOut(false)
+    if (!response.ok) {
+      console.error('削除に失敗しました:', response.status)
+      return
+    }
+
+    fetchExpenditure(targetMonth)
   }
-}
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    if (!csrf?.headerName || !csrf?.token) {
+        console.error('CSRF情報が取得できていません')
+        return
+    }
+
+    setIsLoggingOut(true)
+
+    try {
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                [csrf.headerName]: csrf.token
+            },
+            credentials: 'same-origin'
+        })
+
+        if (!response.ok) {
+            console.error('ログアウトに失敗しました:', response.status)
+            return
+        }
+
+        window.location.assign('/login')
+    } catch (error) {
+        console.error('ログアウト通信に失敗しました:', error)
+    } finally {
+        setIsLoggingOut(false)
+    }
+  }
+
+  const changeMonth = (offset) => {
+    const [year, month] = targetMonth.split('-').map(Number)
+    const date = new Date(year, month - 1 + offset, 1)
+
+    const nextYear = date.getFullYear()
+    const nextMonth = String(date.getMonth() + 1).padStart(2, '0')
+
+    setTargetMonth(`${nextYear}-${nextMonth}`)
+  }
   return (
     <div className="expenditure-page">
       <header className="app-header">
@@ -214,6 +236,32 @@ const handleLogout = async () => {
           </section>
         )}
 
+        <div className="month-selector">
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={() => changeMonth(-1)}
+            aria-label="前月"
+          >
+            ‹
+          </button>
+              
+          <input
+            type="month"
+            value={targetMonth}
+            onChange={(event) => setTargetMonth(event.target.value)}
+            aria-label="対象月"
+          />
+        
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={() => changeMonth(1)}
+            aria-label="翌月"
+          >
+            ›
+          </button>
+        </div>
         <ExpenditureList
           expenditures={expenditures}
           onEdit={handleEdit}
