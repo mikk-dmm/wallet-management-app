@@ -50,7 +50,7 @@ public class BudgetService {
 
         MonthlyBudget monthlyBudget =
                 monthlyBudgetRepository.findByUserIdAndTargetMonth(userId, targetMonth)
-                .orElseThrow(() -> new IllegalArgumentException("monthly budget not found for the specified user and month"));
+                .orElseThrow(() -> new IllegalArgumentException("該当する対象月とユーザーには、月間予算は存在しません"));
 
         return monthlyBudget;
     }
@@ -59,10 +59,10 @@ public class BudgetService {
     public void createMonthlyBudget(Long userId, YearMonth targetMonth, BigDecimal budgetAmount) {
 
         User user = userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                        .orElseThrow(() -> new IllegalArgumentException("ユーザーが存在しません"));
 
         if (monthlyBudgetRepository.existsByUserIdAndTargetMonth(userId, targetMonth)) {
-            throw new IllegalArgumentException("Monthly Budget already exists");
+            throw new IllegalArgumentException("該当の対象月には月間予算がすでに登録されています");
         }
 
         MonthlyBudget monthlyBudget = new MonthlyBudget();
@@ -110,10 +110,10 @@ public class BudgetService {
     public Category ownedCategoryCheck(Long userId, Long categoryId) {
 
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("カテゴリが見つかりません"));
 
         if (!category.getUser().getId().equals(userId)) {
-            throw new CategoryNotFoundException("Category not found");
+            throw new CategoryNotFoundException("カテゴリが見つかりません");
         }
 
         return category;
@@ -125,7 +125,7 @@ public class BudgetService {
 
         CategoryBudget categoryBudget =
                 categoryBudgetRepository.findByUserIdAndCategoryIdAndTargetMonth(userId, categoryId, targetMonth)
-                        .orElseThrow(() -> new IllegalArgumentException("Category budget not found for the specified user, category, and month"));
+                        .orElseThrow(() -> new IllegalArgumentException("該当するカテゴリ・対象月・ユーザーには、カテゴリ予算が存在しません"));
 
         return categoryBudget;
     }
@@ -138,7 +138,7 @@ public class BudgetService {
         BigDecimal budgetAmount
     ) {
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
 
             Category category = ownedCategoryCheck(userId, categoryId);
 
@@ -148,7 +148,7 @@ public class BudgetService {
                         categoryId,
                         targetMonth
                     )) {
-                throw new IllegalArgumentException("this category budget is already exists");
+                throw new IllegalArgumentException("このカテゴリ予算はすでに設定されています");
             }
 
             CategoryBudget categoryBudget = new CategoryBudget();

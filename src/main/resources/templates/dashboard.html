@@ -40,17 +40,14 @@
                 </div>
             
                 <form class="month-picker-form"
-                    th:action="@{/dashboard}"
-                    method="get">
-                    <input
-                        type="month"
-                        name="targetMonth"
-                        aria-label="表示対象月"
-                        th:value="${dashboard.targetMonth}">
-            
-                    <button class="btn btn-secondary" type="submit">
-                        表示
-                    </button>
+                        th:action="@{/dashboard}"
+                        method="get">
+
+                    <input type="month"
+                            name="targetMonth"
+                            aria-label="表示対象月"
+                            th:value="${dashboard.targetMonth}"
+                            onchange="this.form.requestSubmit()">
                 </form>
             </div>
         </div>

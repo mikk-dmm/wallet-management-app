@@ -312,17 +312,20 @@ tbody tr:hover {
 
 /* Month Navigation */
 
+/* Month Navigation */
+
 .month-navigation {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .month-switcher {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .month-arrow {
@@ -331,17 +334,16 @@ tbody tr:hover {
     justify-content: center;
     width: 36px;
     height: 36px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    color: var(--text);
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
     font-size: 24px;
     text-decoration: none;
 }
 
 .month-arrow:hover {
-    background: var(--primary-light);
-    color: var(--primary);
+    background: #f3f4f6;
 }
 
 .current-month {
@@ -349,26 +351,69 @@ tbody tr:hover {
     text-align: center;
     font-size: 15px;
     font-weight: 600;
-}
-
-.month-picker-form input[type="month"] {
-    width: 155px;
-    flex: 0 0 155px;
-}
-
-.month-picker-form .btn {
-    flex-shrink: 0;
     white-space: nowrap;
 }
 
-@media (max-width: 767px) {
-    .month-picker-form {
-        max-width: 100%;
-    }
+.month-picker-form {
+    margin: 0;
+}
 
-    .month-picker-form input[type="month"] {
-        width: 155px;
-        flex: 0 1 155px;
-        min-width: 0;
+.month-picker-form input[type="month"] {
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.month-picker-form input[type="month"]:focus {
+    outline: 2px solid #287a60;
+    outline-offset: 1px;
+}
+
+@media (max-width: 767px) {
+    .month-navigation {
+        justify-content: flex-start;
     }
+}
+
+
+/* Alerts */
+
+.alerts {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border: 1px solid;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.alert-success {
+    background: #f0fdf4;
+    color: var(--success);
+    border-color: #bbf7d0;
+}
+
+.alert-error {
+    background: #fef2f2;
+    color: var(--danger);
+    border-color: #fecaca;
+}
+
+.alert + .alert {
+    margin-top: 10px;
+}
+
+.field-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 6px;
 }

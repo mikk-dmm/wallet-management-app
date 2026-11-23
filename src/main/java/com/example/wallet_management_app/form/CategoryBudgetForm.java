@@ -14,13 +14,13 @@ import java.time.YearMonth;
 @Setter
 public class CategoryBudgetForm {
 
-    @NotNull(message = "Category is required")
+    @NotNull(message = "カテゴリを選択してください")
     private Long categoryId;
 
-    @NotNull(message = "Target month is required")
+    @NotNull(message = "対象月を選択してください")
     private YearMonth targetMonth;
 
-    @NotNull(message = "Budget amount is required")
-    @Positive(message = "budget amount is must be grater than 0")
+    @NotNull(message = "予算額を入力してください")
+    @Positive(message = "予算額は0より大きい値を入力してください")
     private BigDecimal budgetAmount;
 }
