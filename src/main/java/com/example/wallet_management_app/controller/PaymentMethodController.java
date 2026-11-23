@@ -28,7 +28,7 @@ public class PaymentMethodController {
     private final PaymentMethodService paymentMethodService;
 
     @GetMapping("/paymentMethods")
-    public String showPaymetnMethods(
+    public String showPaymentMethods(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
@@ -60,7 +60,7 @@ public class PaymentMethodController {
         BindingResult result,
         @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model,
-        RedirectAttributes redirectAttribute
+        RedirectAttributes redirectAttributes
     ) {
 
         Long userId = userDetails.getUserId();
@@ -78,10 +78,11 @@ public class PaymentMethodController {
                 form.getName()
             );
         } catch (IllegalArgumentException e) {
-            redirectAttribute.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 
             return "redirect:/paymentMethods";
         }
+        redirectAttributes.addFlashAttribute("successMessage", "支払い方法を登録しました");
 
         return "redirect:/paymentMethods";
     }
@@ -114,7 +115,7 @@ public class PaymentMethodController {
         @PathVariable("id") Long paymentMethodId,
         Model model,
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        RedirectAttributes redirectAttribute
+        RedirectAttributes redirectAttributes
     ) {
         
         Long userId = userDetails.getUserId();
@@ -132,9 +133,11 @@ public class PaymentMethodController {
                 paymentMethodId,
                 form.getName());
         } catch (IllegalArgumentException e) {
-            redirectAttribute.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/paymentMethods";
         }
-        
+        redirectAttributes.addFlashAttribute("successMessage", "支払い方法を更新しました");
+
         return "redirect:/paymentMethods";
     }
 
@@ -142,7 +145,7 @@ public class PaymentMethodController {
     public String deletePaymentMethod(
         @PathVariable("id") Long paymentMethodId,
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        RedirectAttributes redirectAttribute
+        RedirectAttributes redirectAttributes
     ) {
         Long userId = userDetails.getUserId();
 
@@ -152,8 +155,10 @@ public class PaymentMethodController {
                 paymentMethodId
             );
         } catch (IllegalArgumentException e) {
-            redirectAttribute.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/paymentMethods";
         }
+        redirectAttributes.addFlashAttribute("successMessage", "支払い方法を削除しました");
 
         return "redirect:/paymentMethods";
     }

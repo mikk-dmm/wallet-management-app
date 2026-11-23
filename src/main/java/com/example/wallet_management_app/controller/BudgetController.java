@@ -91,7 +91,10 @@ public class BudgetController {
 
             return "redirect:/budgets/monthlyBudget";
         }
-
+        redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "月間予算を登録しました。"
+        );
         return "redirect:/budgets/monthlyBudget";
     }
 
@@ -110,6 +113,7 @@ public class BudgetController {
         form.setBudgetAmount(monthlyBudget.getBudgetAmount());
 
         model.addAttribute("monthlyBudgetForm", form);
+        model.addAttribute("targetMonth", targetMonth);
 
         return "monthlyBudgetForm";
     }
@@ -127,6 +131,7 @@ public class BudgetController {
 
         if (result.hasErrors()) {
             model.addAttribute("monthlyBudgetForm", form);
+            model.addAttribute("targetMonth", targetMonth);
             return "monthlyBudgetForm";
         }
 
@@ -135,10 +140,13 @@ public class BudgetController {
             targetMonth,
             form.getBudgetAmount()
         );} catch (IllegalArgumentException e) {
-            model.addAttribute("monthlyBudgetForm", form);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            
+            return "redirect:/budgets/monthlyBudget";
         }
+        redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "月間予算を更新しました"
+        );
         
         return "redirect:/budgets/monthlyBudget";
     }
@@ -146,12 +154,18 @@ public class BudgetController {
     @PostMapping("/monthlyBudget/{targetMonth}/delete")
     public String deleteMonthlyBudget(
         @PathVariable("targetMonth") YearMonth targetMonth,
-        @AuthenticationPrincipal CustomUserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        RedirectAttributes redirectAttributes
     ) {
         Long userId = userDetails.getUserId();
 
-        budgetService.deleteMonthlyBudget(userId, targetMonth);
-
+        try {
+            budgetService.deleteMonthlyBudget(userId, targetMonth);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/budgets/monthlyBudget";
+        }
+        redirectAttributes.addFlashAttribute("successMessage", "月間予算を削除しました");
         return "redirect:/budgets/monthlyBudget";
     }
 
@@ -225,13 +239,15 @@ public class BudgetController {
             form.getTargetMonth(),
             form.getBudgetAmount()
         );} catch (IllegalArgumentException e) {
-            List<Category> categories = categoryService.getCategories(userId);
 
-            model.addAttribute("categories", categories);
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-
             return "redirect:/budgets/categoryBudget?targetMonth=" + form.getTargetMonth();
         }
+        redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "カテゴリ別予算を登録しました。"
+        );
+        
 
         return "redirect:/budgets/categoryBudget?targetMonth=" + form.getTargetMonth();
     }
@@ -268,7 +284,8 @@ public class BudgetController {
         @ModelAttribute("categoryBudgetForm") @Valid CategoryBudgetForm form,
         BindingResult bindingresult,
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        Model model
+        Model model,
+        RedirectAttributes redirectAttributes
     ) {
         Long userId = userDetails.getUserId();
 
@@ -282,12 +299,17 @@ public class BudgetController {
             return "categoryBudgetForm";
         }
 
-        budgetService.updateCategoryBudget(
+        try {
+            budgetService.updateCategoryBudget(
             userId,
             categoryId,
             targetMonth,
-            form.getBudgetAmount()
-        );
+            form.getBudgetAmount());
+            } catch (IllegalArgumentException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                return "redirect:/budgets/catgoryBudget?targetMonth=" + form.getTargetMonth();
+            }
+        redirectAttributes.addFlashAttribute("successMessage", "カテゴリ別予算を更新しました");
 
         return "redirect:/budgets/categoryBudget?targetMonth=" + form.getTargetMonth();
     }
@@ -296,12 +318,21 @@ public class BudgetController {
     public String deleteCategoryBudget(
         @PathVariable("categoryId") Long categoryId,
         @PathVariable("targetMonth") YearMonth targetMonth,
-        @AuthenticationPrincipal CustomUserDetails userDetails
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        RedirectAttributes redirectAttributes
     ) {
         Long userId = userDetails.getUserId();
 
-        budgetService.deleteCategoryBudget(userId, categoryId, targetMonth);
-
+        try {
+            budgetService.deleteCategoryBudget(userId, categoryId, targetMonth);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/budgets/categoryBudget?targetMonth=" + targetMonth;
+        }
+        redirectAttributes.addFlashAttribute(
+            "successMessage",
+            "カテゴリ別予算を削除しました。"
+        );
         return "redirect:/budgets/categoryBudget?targetMonth=" + targetMonth;
     }
 }

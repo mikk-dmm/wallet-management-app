@@ -24,10 +24,7 @@
             </div>
         </div>
 
-        <div class="alert-error"
-                th:if="${errorMessage}"
-                th:text="${errorMessage}">
-        </div>
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
 
         <section class="card budget-form-card">
 
@@ -58,7 +55,7 @@
                         <input type="number"
                                 id="budgetAmount"
                                 th:field="*{budgetAmount}"
-                                min="0"
+                                min="1"
                                 step="1"
                                 placeholder="例：80000"
                                 required>
@@ -67,6 +64,10 @@
 
                     <p class="form-hint">
                         1か月の予算額を円単位で入力してください。
+                    </p>
+                    <p class="field-error"
+                        th:if="${#fields.hasErrors('budgetAmount')}"
+                        th:errors="*{budgetAmount}">
                     </p>
                 </div>
 

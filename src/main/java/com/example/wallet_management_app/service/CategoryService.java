@@ -43,10 +43,10 @@ public class CategoryService {
 
     public Category findCategory(Long userId, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("カテゴリが見つかりません"));
 
         if (!category.getUser().getId().equals(userId)) {
-            throw new CategoryNotFoundException("Category not found");
+            throw new CategoryNotFoundException("カテゴリが見つかりません");
         }
 
         return category;
@@ -55,10 +55,10 @@ public class CategoryService {
     @Transactional
     public void createCategory(Long userId, String name) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
 
         if (categoryRepository.existsByUserIdAndName(userId, name)) {
-            throw new IllegalArgumentException("Category with the same name already exists for this user");
+            throw new IllegalArgumentException("同じカテゴリ名がすでに登録されています");
         }
 
         Category category = new Category();
@@ -74,7 +74,7 @@ public class CategoryService {
 
         if (!category.getName().equals(name)
                 && categoryRepository.existsByUserIdAndName(userId, name)) {
-            throw new IllegalArgumentException("Category with the same name already exists for this user");
+            throw new IllegalArgumentException("同じカテゴリ名がすでに登録されています");
         }
 
         category.setName(name);
@@ -88,7 +88,7 @@ public class CategoryService {
         if (expenditureRepository.existsByUserIdAndCategoryId(userId, categoryId)
                     || categoryBudgetRepository.existsByUserIdAndCategoryId(userId, categoryId)
     ) {
-            throw new IllegalArgumentException("Cannot delete category with associated expenditures");
+            throw new IllegalArgumentException("このカテゴリはカテゴリ別予算または支出で使用されているため、削除できません");
         }
         categoryRepository.delete(category);
     }

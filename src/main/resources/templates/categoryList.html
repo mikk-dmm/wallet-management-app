@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/category.css}">
 </head>
 <body>
-    <header th:replace="~{fragments/header :: header('categoies')}"></header>
+    <header th:replace="~{fragments/header :: header('categories')}"></header>
 
     <main class="container category-page">
         <div class="page-header">
@@ -25,10 +25,7 @@
             </a>
         </div>
 
-        <div class="alert-error"
-                th:if="${errorMessage}"
-                th:text="${errorMessage}">
-        </div>
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
 
         <section class="card category-list-card">
             <div class="section-header">

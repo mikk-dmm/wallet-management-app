@@ -28,10 +28,10 @@ public class PaymentMethodService {
 
     public PaymentMethod findPaymentMethod(Long userId, Long paymentMethodId) {
         PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
-                .orElseThrow(() -> new PaymentMethodNotFoundException("Payment method not found"));
+                .orElseThrow(() -> new PaymentMethodNotFoundException("支払い方法が見つかりません"));
 
         if (!paymentMethod.getUser().getId().equals(userId)) {
-            throw new PaymentMethodNotFoundException("Payment method not found");
+            throw new PaymentMethodNotFoundException("支払い方法が見つかりません");
         }
 
         return paymentMethod;
@@ -40,10 +40,10 @@ public class PaymentMethodService {
     @Transactional
     public void createPaymentMethod(Long userId, String name) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("ユーザーが見つかりません"));
 
         if (paymentMethodRepository.existsByUserIdAndName(userId, name)) {
-            throw new IllegalArgumentException("Payment method with the same name already exists for this user");
+            throw new IllegalArgumentException("同じ支払い方法がすでに登録されています");
         }
 
         PaymentMethod paymentMethod = new PaymentMethod();
@@ -59,7 +59,7 @@ public class PaymentMethodService {
 
         if (!paymentMethod.getName().equals(name)
                 && paymentMethodRepository.existsByUserIdAndName(userId, name)) {
-            throw new IllegalArgumentException("Payment method with the same name already exists for this user");
+            throw new IllegalArgumentException("同じ支払い方法がすでに登録されています");
         }
 
         paymentMethod.setName(name);
@@ -71,7 +71,7 @@ public class PaymentMethodService {
         PaymentMethod paymentMethod = findPaymentMethod(userId, paymentMethodId);
 
         if (expenditureRepository.existsByUserIdAndPaymentMethodId(userId, paymentMethodId)) {
-            throw new IllegalArgumentException("Cannot delete payment method with associated expenditures");
+            throw new IllegalArgumentException("この支払い方法は、支出で使用されているため削除できません");
         }
         paymentMethodRepository.delete(paymentMethod);
     }

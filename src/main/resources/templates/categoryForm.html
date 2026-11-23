@@ -23,6 +23,8 @@
             </div>
         </div>
 
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
         <section class="card category-form-card">
             <form th:action="${editMode == false}
                             ? @{/categories}
@@ -36,12 +38,16 @@
                     <input type="text"
                             id="name"
                             th:field="*{name}"
-                            maxlength="100"
+                            maxlength="30"
                             placeholder="例：食費"
                             required>
 
                     <p class="form-hint">
                         家計の支出を分類するための名前を入力してください。
+                    </p>
+                    <p class="field-error"
+                        th:if="${#fields.hasErrors('name')}"
+                        th:errors="*{name}">
                     </p>
                 </div>
 

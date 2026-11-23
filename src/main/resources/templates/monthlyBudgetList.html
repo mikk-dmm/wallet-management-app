@@ -21,7 +21,7 @@
             </a>
         </div>
 
-        <div class="alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
 
         <section class="card budget-list-card">
             <h2>登録済みの予算</h2>

@@ -12,8 +12,8 @@ import jakarta.validation.constraints.Size;
 @Setter
 public class PaymentMethodForm {
 
-    @NotBlank(message = "name is required")
-    @Size(max = 30, message = "payment method name is must be at most 30 characters")
+    @NotBlank(message = "支払い方法を入力してください")
+    @Size(max = 30, message = "支払い方法は30字以内で入力してください")
     private String name;
 
 }

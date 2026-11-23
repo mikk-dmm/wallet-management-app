@@ -78,6 +78,7 @@ public class CategoryController {
 
             return "redirect:/categories";
         }
+        redirectAttributes.addFlashAttribute("successMessage", "カテゴリを登録しました");
 
         return "redirect:/categories";
     }
@@ -85,10 +86,11 @@ public class CategoryController {
     @GetMapping("/category/edit/{categoryId}")
     public String showEditCategoryForm(
         @PathVariable("categoryId") Long categoryId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Model model
     ) {
-        Long userId = 1L;
-
+        Long userId = userDetails.getUserId();
+        
         Category category = categoryService.findCategory(userId, categoryId);
         CategoryForm form = new CategoryForm();
         form.setName(category.getName());
@@ -128,8 +130,9 @@ public class CategoryController {
             );
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/categories";
         }
-
+        redirectAttributes.addFlashAttribute("successMessage", "カテゴリを更新しました");
         return "redirect:/categories";
     }
 
@@ -146,7 +149,9 @@ public class CategoryController {
             categoryService.deleteCategory(userId, categoryId);
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/categories";
         }
+        redirectAttributes.addFlashAttribute("successMessage", "カテゴリを削除しました");
         
         return "redirect:/categories";
     }

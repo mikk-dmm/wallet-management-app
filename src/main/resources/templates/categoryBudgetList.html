@@ -21,6 +21,10 @@
                 </p>
             </div>
         
+            <a class="btn btn-primary"
+                th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
+                新規予算登録
+            </a>
             <div class="month-navigation">
                 <div class="month-switcher">
                     <a class="month-arrow"
@@ -41,31 +45,21 @@
                 </div>
             
                 <form class="month-picker-form"
-                    th:action="@{/budgets/categoryBudget}"
-                    method="get">
+                        th:action="@{/budgets/categoryBudget}"
+                        method="get">
+
                     <input type="month"
-                        name="targetMonth"
-                        aria-label="表示対象月"
-                        th:value="${targetMonth}">
-            
-                    <button class="btn btn-secondary" type="submit">
-                        表示
-                    </button>
+                            name="targetMonth"
+                            aria-label="表示対象月"
+                            th:value="${targetMonth}"
+                            onchange="this.form.requestSubmit()">
                 </form>
-            
-                <a class="btn btn-primary"
-                    th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
-                    新規予算登録
-                </a>
             </div>
         </div>
 
 
 
-        <div class="alert-error"
-                th:if="${errorMessage}"
-                th:text="${errorMessage}">
-        </div>
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
 
         <section class="card category-budget-list-card">
             <h2>登録済みの予算</h2>

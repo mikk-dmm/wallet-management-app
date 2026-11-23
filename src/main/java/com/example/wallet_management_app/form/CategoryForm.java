@@ -12,8 +12,8 @@ import jakarta.validation.constraints.Size;
 @Setter
 public class CategoryForm {
 
-    @NotBlank(message = "name is required")
-    @Size(max = 30, message = "category name must be lower than 30 character")
+    @NotBlank(message = "カテゴリ名を入力してください")
+    @Size(max = 30, message = "カテゴリ名は30字以内で入力してください")
     private String name;
 
 }
