@@ -181,3 +181,17 @@
         padding: 20px;
     }
 }
+
+.category-budget-page .month-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+    .category-budget-page .month-navigation {
+        flex-wrap: wrap;
+    }
+}

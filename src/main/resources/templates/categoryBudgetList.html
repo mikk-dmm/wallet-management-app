@@ -10,21 +10,23 @@
 <body>
     <header th:replace="~{fragments/header :: header('categoryBudget')}"></header>
 
-    <main class="container category-budget-page">
+
+        <main class="container category-budget-page">
         
-        
-        <div class="page-header">
-            <div>
-                <h1>カテゴリ別予算</h1>
-                <p class="text-secondary"
-                    th:text="|${targetMonth}のカテゴリ別予算を管理します。|">
-                </p>
+            <div class="page-header">
+                <div>
+                    <h1>カテゴリ別予算</h1>
+                    <p class="text-secondary"
+                        th:text="|${targetMonth}のカテゴリ別予算を管理します。|">
+                    </p>
+                </div>
+            
+                <a class="btn btn-primary"
+                    th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
+                    新規予算登録
+                </a>
             </div>
         
-            <a class="btn btn-primary"
-                th:href="@{/budgets/categoryBudget/new(targetMonth=${targetMonth})}">
-                新規予算登録
-            </a>
             <div class="month-navigation">
                 <div class="month-switcher">
                     <a class="month-arrow"
@@ -34,7 +36,7 @@
                     </a>
                 
                     <span class="current-month"
-                        th:text="${targetMonth.year} + '年' + ${targetMonth.monthValue} + '月'">
+                            th:text="${targetMonth.year} + '年' + ${targetMonth.monthValue} + '月'">
                     </span>
                 
                     <a class="month-arrow"
@@ -47,7 +49,6 @@
                 <form class="month-picker-form"
                         th:action="@{/budgets/categoryBudget}"
                         method="get">
-
                     <input type="month"
                             name="targetMonth"
                             aria-label="表示対象月"
@@ -55,7 +56,7 @@
                             onchange="this.form.requestSubmit()">
                 </form>
             </div>
-        </div>
+        
 
 
 
